@@ -1,85 +1,188 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي أساطير فري فاير - وقت محدود</title>
+    <title>Free Fire Challenge Pro</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin-bottom: 5px; }
-        #timer-box { font-size: 28px; font-weight: bold; margin: 10px 0; padding: 5px; border-radius: 5px; background: #222; display: inline-block; min-width: 120px; border: 1px solid #444; }
-        .timer-normal { color: #00ff00; }
-        .timer-danger { color: #ff0000; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        #preview-img { width: 90%; max-width: 280px; border: 4px solid #ffd700; border-radius: 10px; margin: 10px 0; }
-        #puzzle-board { display: grid; gap: 1px; margin: 10px auto; width: 95vw; height: 95vw; max-width: 450px; max-height: 450px; border: 2px solid #444; background: #111; }
-        .tile { background-repeat: no-repeat; border: 0.1px solid rgba(255,255,255,0.05); cursor: pointer; touch-action: none; }
-        .selected { border: 2px solid #00ff00 !important; z-index: 10; box-shadow: 0 0 15px #00ff00; }
-        .btn { background: linear-gradient(45deg, #ff4500, #ffd700); color: black; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; }
-        .hidden { display: none; }
-        #level-info { background: #222; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-bottom: 2px solid #ffd700; font-size: 14px; }
+        :root {
+            --primary: #ffd700;
+            --secondary: #ff4500;
+            --bg: #050505;
+            --panel: #1a1a1a;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            overflow-x: hidden; 
+            user-select: none;
+        }
+
+        /* شاشة الإرشادات الفخمة */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; transition: 0.5s;
+        }
+        .modal {
+            background: var(--panel);
+            border: 2px solid var(--primary);
+            padding: 30px; border-radius: 20px;
+            max-width: 85%; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        .modal h2 { color: var(--primary); margin-top: 0; }
+        .modal ul { text-align: left; line-height: 1.8; margin: 20px 0; }
+
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+
+        h1 { 
+            color: var(--primary); 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--secondary);
+            margin: 10px 0;
+        }
+
+        .stats-bar {
+            background: var(--panel);
+            padding: 10px; border-radius: 12px;
+            display: flex; justify-content: space-around;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 15px;
+        }
+
+        #timer-box { 
+            font-size: 28px; font-weight: bold; color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .timer-danger { color: #ff0000 !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        #puzzle-board { 
+            display: grid; gap: 2px; margin: 15px auto; 
+            width: 90vw; height: 90vw; max-width: 420px; max-height: 420px; 
+            border: 3px solid #333; background: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-radius: 8px; overflow: hidden;
+        }
+
+        .tile { 
+            background-repeat: no-repeat; 
+            border: 0.1px solid rgba(255,255,255,0.05); 
+            cursor: pointer; touch-action: none;
+            transition: transform 0.1s;
+        }
+        .tile:active { transform: scale(0.95); }
+        .selected { border: 2px solid var(--primary) !important; z-index: 10; box-shadow: 0 0 15px var(--primary); }
+        
+        /* Next Level Button Styling */
+        .btn-main { 
+            background: #333; color: #666; border: none; padding: 16px; 
+            font-size: 18px; font-weight: bold; border-radius: 50px; 
+            width: 90%; margin-top: 20px; cursor: not-allowed; 
+            pointer-events: none; transition: 0.4s;
+            text-transform: uppercase;
+        }
+        
+        .btn-main.active { 
+            background: linear-gradient(45deg, #28a745, #1e7e34) !important; 
+            color: white !important; cursor: pointer !important; 
+            pointer-events: auto !important; box-shadow: 0 0 20px #28a745; 
+            border: 2px solid white !important;
+        }
+
+        .btn-retry { 
+            background: var(--secondary); color: white; border: none; 
+            padding: 12px 30px; border-radius: 50px; cursor: pointer;
+            font-weight: bold; margin-top: 20px;
+        }
+
+        .hidden { display: none !important; }
+        #preview-img { width: 85%; border: 3px solid var(--primary); border-radius: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
+<div id="overlay">
+    <div class="modal">
+        <h2>SOLDIER! 🎖️</h2>
+        <p>Follow these instructions to win:</p>
+        <ul>
+            <li>📌 Memorize the image in <b>3 seconds</b>.</li>
+            <li>📌 Swap pieces to rebuild the photo.</li>
+            <li>📌 Finish before the <b>2-minute</b> timer ends.</li>
+            <li>📌 The <b>Next Level</b> button unlocks only when 100% complete.</li>
+        </ul>
+        <button class="btn-retry" style="background: var(--primary); color: black;" onclick="closeInstructions()">START MISSION</button>
+    </div>
+</div>
+
 <div class="container">
-    <h1>🔥 تحدي أساطير فري فاير 🔥</h1>
+    <h1>Token Challenge</h1>
     
-    <div id="level-info">المرحلة: <span id="lvl">1</span> | القطع: <span id="pts">12</span></div>
-    
-    <div id="timer-box" class="timer-normal">02:00</div>
+    <div class="stats-bar">
+        <div>LEVEL: <span id="lvl" style="color:var(--primary)">1</span></div>
+        <div id="timer-box">02:00</div>
+    </div>
 
     <div id="preview-screen">
-        <p>احفظ الصورة.. ستختفي سريعاً!</p>
-        <img id="preview-img" src="" alt="Preview">
+        <p style="color:var(--primary)">Get Ready! Memorizing...</p>
+        <img id="preview-img" src="">
     </div>
 
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
-        <p style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
+        <button id="next-lvl-btn" class="btn-main" onclick="goNext()">Next Mission</button>
     </div>
 
     <div id="fail-screen" class="hidden">
-        <h2 style="color: #ff0000;">انتهى الوقت! ⏰</h2>
-        <p>للأسف لم تكن سريعاً بما يكفي.</p>
-        <button class="btn" onclick="initLevel()">إعادة المحاولة</button>
-    </div>
-
-    <div id="win-screen" class="hidden">
-        <h2 style="color: #00ff00;">كفو يا بطل! 🏆</h2>
-        <button class="btn" onclick="nextLevel()">المرحلة التالية</button>
+        <h2 style="color: var(--secondary);">MISSION FAILED! ❌</h2>
+        <button class="btn-retry" onclick="initLevel()">REDEPLOY</button>
     </div>
 
     <div id="final-screen" class="hidden">
-        <h2 style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
-        <p>أكملت 5 مراحل تحت الضغط!</p>
-        <a href="https://t.me/Free_Fire_121"><button class="btn">استلم جواهرك من هنا</button></a>
+        <h2 style="color: var(--primary);">🏆 SUPREME COMMANDER! 🏆</h2>
+        <p>You have completed all levels.</p>
+        <a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:var(--primary); color:black">COLLECT BOOYAH!</button></a>
     </div>
 </div>
 
 <script>
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 3, c: 4 },
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 4, c: 6 },
+        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 3, c: 6 },
         { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 6, c: 8 },
         { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 8, c: 12 },
         { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 10, c: 15 }
     ];
 
-    let cur = 0, pieces = [], firstTile = null, timeLeft = 120, timerInterval = null;
+    let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null;
+
+    function closeInstructions() {
+        document.getElementById('overlay').style.display = 'none';
+        initLevel();
+    }
 
     function initLevel() {
         clearInterval(timerInterval);
+        firstTile = null;
         const l = levels[cur];
         document.getElementById('lvl').innerText = cur + 1;
-        document.getElementById('pts').innerText = l.r * l.c;
         document.getElementById('preview-img').src = l.img;
+        
+        const btn = document.getElementById('next-lvl-btn');
+        btn.classList.remove('active');
+        btn.innerText = cur === levels.length - 1 ? "FINISH MISSION" : "Next Mission";
+
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('fail-screen').classList.add('hidden');
-        updateTimerDisplay(120);
 
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
@@ -91,10 +194,12 @@
 
     function startTimer() {
         timeLeft = 120;
-        updateTimerDisplay(timeLeft);
         timerInterval = setInterval(() => {
             timeLeft--;
-            updateTimerDisplay(timeLeft);
+            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            const box = document.getElementById('timer-box');
+            box.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            box.className = timeLeft <= 30 ? 'timer-danger' : '';
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 document.getElementById('game-screen').classList.add('hidden');
@@ -103,72 +208,62 @@
         }, 1000);
     }
 
-    function updateTimerDisplay(s) {
-        const m = Math.floor(s / 60);
-        const sec = s % 60;
-        const display = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-        const box = document.getElementById('timer-box');
-        box.innerText = display;
-        if (s <= 60) {
-            box.className = 'timer-danger';
-        } else {
-            box.className = 'timer-normal';
-        }
-    }
-
     function createBoard() {
-        const l = levels[cur];
-        const board = document.getElementById('puzzle-board');
+        const l = levels[cur], board = document.getElementById('puzzle-board');
         board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
         board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
         board.innerHTML = '';
-        pieces = Array.from({length: l.r * l.c}, (_, i) => i);
-        let shuffled = [...pieces].sort(() => Math.random() - 0.5);
-        shuffled.forEach((pos, index) => {
+        
+        let ids = Array.from({length: l.r * l.c}, (_, i) => i);
+        let shuffled = [...ids].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach(id => {
             const tile = document.createElement('div');
             tile.className = 'tile';
             tile.style.backgroundImage = `url(${l.img})`;
             tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
-            let row = Math.floor(pos / l.c), col = pos % l.c;
-            tile.style.backgroundPosition = `${(col / (l.c - 1)) * 100}% ${(row / (l.r - 1)) * 100}%`;
-            tile.dataset.correctPos = pos;
-            tile.onclick = () => onTileClick(tile);
+            let r = Math.floor(id / l.c), c = id % l.c;
+            tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
+            tile.dataset.id = id;
+
+            tile.onclick = function() {
+                if (document.getElementById('next-lvl-btn').classList.contains('active')) return;
+                if (!firstTile) {
+                    firstTile = this; this.classList.add('selected');
+                } else {
+                    let tId = firstTile.dataset.id, tBg = firstTile.style.backgroundPosition;
+                    firstTile.dataset.id = this.dataset.id;
+                    firstTile.style.backgroundPosition = this.style.backgroundPosition;
+                    this.dataset.id = tId;
+                    this.style.backgroundPosition = tBg;
+                    firstTile.classList.remove('selected');
+                    firstTile = null;
+                    checkWin();
+                }
+            };
             board.appendChild(tile);
         });
     }
 
-    function onTileClick(tile) {
-        if (!firstTile) {
-            firstTile = tile;
-            tile.classList.add('selected');
-        } else {
-            let bg1 = firstTile.style.backgroundPosition, cp1 = firstTile.dataset.correctPos;
-            firstTile.style.backgroundPosition = tile.style.backgroundPosition;
-            firstTile.dataset.correctPos = tile.dataset.correctPos;
-            tile.style.backgroundPosition = bg1;
-            tile.dataset.correctPos = cp1;
-            firstTile.classList.remove('selected');
-            firstTile = null;
-            checkWin();
-        }
-    }
-
     function checkWin() {
-        const tiles = document.querySelectorAll('.tile');
-        let win = Array.from(tiles).every((t, i) => parseInt(t.dataset.correctPos) === i);
-        if (win) {
+        const tiles = Array.from(document.querySelectorAll('.tile'));
+        const isWin = tiles.every((t, i) => parseInt(t.dataset.id) === i);
+        if (isWin) {
             clearInterval(timerInterval);
-            if (cur < levels.length - 1) {
-                document.getElementById('win-screen').classList.remove('hidden');
-            } else {
-                document.getElementById('game-screen').classList.add('hidden');
-                document.getElementById('final-screen').classList.remove('hidden');
-            }
+            document.getElementById('next-lvl-btn').classList.add('active');
         }
     }
 
-    function nextLevel() { cur++; initLevel(); }
-    window.onload = initLevel;
+    function goNext() {
+        if (cur < levels.length - 1) {
+            cur++;
+            initLevel();
+        } else {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('final-screen').classList.remove('hidden');
+        }
+    }
+
 </script>
 </body>
 </html>
