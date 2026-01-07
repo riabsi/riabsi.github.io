@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي أساطير فري فاير - وقت محدود</title>
+    <title>Free Fire Token Challenge</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .container { padding: 15px; max-width: 600px; margin: auto; position: relative; }
+        
+        /* زر تبديل اللغة */
+        #lang-btn { position: absolute; top: 10px; left: 10px; background: #444; color: white; border: 1px solid #ffd700; padding: 5px 10px; border-radius: 5px; cursor: pointer; z-index: 100; font-size: 12px; }
+        [dir="ltr"] #lang-btn { left: auto; right: 10px; }
+
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin-bottom: 5px; }
         #timer-box { font-size: 28px; font-weight: bold; margin: 10px 0; padding: 5px; border-radius: 5px; background: #222; display: inline-block; min-width: 120px; border: 1px solid #444; }
         .timer-normal { color: #00ff00; }
         .timer-danger { color: #ff0000; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
         #preview-img { width: 90%; max-width: 280px; border: 4px solid #ffd700; border-radius: 10px; margin: 10px 0; }
         #puzzle-board { display: grid; gap: 1px; margin: 10px auto; width: 95vw; height: 95vw; max-width: 450px; max-height: 450px; border: 2px solid #444; background: #111; }
         .tile { background-repeat: no-repeat; border: 0.1px solid rgba(255,255,255,0.05); cursor: pointer; touch-action: none; }
@@ -21,40 +27,41 @@
         #level-info { background: #222; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-bottom: 2px solid #ffd700; font-size: 14px; }
     </style>
 </head>
-<body>
+<body id="body-tag">
 
 <div class="container">
-    <h1>🔥 تحدي أساطير فري فاير 🔥</h1>
+    <button id="lang-btn" onclick="toggleLanguage()">English</button>
+    <h1 id="main-title">Free Fire Token</h1>
     
-    <div id="level-info">المرحلة: <span id="lvl">1</span> | القطع: <span id="pts">12</span></div>
+    <div id="level-info">
+        <span id="lvl-txt">المرحلة</span>: <span id="lvl">1</span> | <span id="pcs-txt">القطع</span>: <span id="pts">12</span>
+    </div>
     
     <div id="timer-box" class="timer-normal">02:00</div>
 
     <div id="preview-screen">
-        <p>احفظ الصورة.. ستختفي سريعاً!</p>
+        <p id="preview-msg">احفظ الصورة.. ستختفي سريعاً!</p>
         <img id="preview-img" src="" alt="Preview">
     </div>
 
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
-        <p style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
+        <p id="help-msg" style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
     </div>
 
     <div id="fail-screen" class="hidden">
-        <h2 style="color: #ff0000;">انتهى الوقت! ⏰</h2>
-        <p>للأسف لم تكن سريعاً بما يكفي.</p>
-        <button class="btn" onclick="initLevel()">إعادة المحاولة</button>
+        <h2 id="fail-title" style="color: #ff0000;">انتهى الوقت! ⏰</h2>
+        <button class="btn" id="retry-btn" onclick="initLevel()">إعادة المحاولة</button>
     </div>
 
     <div id="win-screen" class="hidden">
-        <h2 style="color: #00ff00;">كفو يا بطل! 🏆</h2>
-        <button class="btn" onclick="nextLevel()">المرحلة التالية</button>
+        <h2 id="win-title" style="color: #00ff00;">تم إنجاز المرحلة بنجاح! 🏆</h2>
+        <p id="win-msg">جاري الانتقال للمرحلة التالية...</p>
     </div>
 
     <div id="final-screen" class="hidden">
-        <h2 style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
-        <p>أكملت 5 مراحل تحت الضغط!</p>
-        <a href="https://t.me/Free_Fire_121"><button class="btn">استلم جواهرك من هنا</button></a>
+        <h2 id="final-title" style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
+        <a href="https://t.me/Free_Fire_121"><button class="btn" id="claim-btn">استلم جواهرك من هنا</button></a>
     </div>
 </div>
 
@@ -67,7 +74,34 @@
         { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 10, c: 15 }
     ];
 
-    let cur = 0, pieces = [], firstTile = null, timeLeft = 120, timerInterval = null;
+    let cur = 0, pieces = [], firstTile = null, timeLeft = 120, timerInterval = null, currentLang = 'ar';
+
+    const texts = {
+        ar: { title: "Free Fire Token", lvl: "المرحلة", pcs: "القطع", pre: "احفظ الصورة.. ستختفي سريعاً!", help: "اضغط على قطعتين لتبديل أماكنهما", fail: "انتهى الوقت! ⏰", retry: "إعادة المحاولة", win: "تم إنجاز المرحلة بنجاح! 🏆", next: "جاري الانتقال...", final: "🏆 أسطورة حقيقي! 🏆", claim: "استلم جواهرك من هنا", lang: "English" },
+        en: { title: "Free Fire Token", lvl: "Level", pcs: "Pieces", pre: "Memorize the image.. disappearing soon!", help: "Click two pieces to swap them", fail: "Time's up! ⏰", retry: "Retry", win: "Level Completed! 🏆", next: "Moving to next level...", final: "🏆 A True Legend! 🏆", claim: "Claim your gems here", lang: "عربي" }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'ar' ? 'en' : 'ar';
+        const b = document.getElementById('body-tag');
+        b.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        updateUI();
+    }
+
+    function updateUI() {
+        const t = texts[currentLang];
+        document.getElementById('lang-btn').innerText = t.lang;
+        document.getElementById('lvl-txt').innerText = t.lvl;
+        document.getElementById('pcs-txt').innerText = t.pcs;
+        document.getElementById('preview-msg').innerText = t.pre;
+        document.getElementById('help-msg').innerText = t.help;
+        document.getElementById('fail-title').innerText = t.fail;
+        document.getElementById('retry-btn').innerText = t.retry;
+        document.getElementById('win-title').innerText = t.win;
+        document.getElementById('win-msg').innerText = t.next;
+        document.getElementById('final-title').innerText = t.final;
+        document.getElementById('claim-btn').innerText = t.claim;
+    }
 
     function initLevel() {
         clearInterval(timerInterval);
@@ -80,6 +114,7 @@
         document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('fail-screen').classList.add('hidden');
         updateTimerDisplay(120);
+        updateUI();
 
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
@@ -109,11 +144,7 @@
         const display = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
         const box = document.getElementById('timer-box');
         box.innerText = display;
-        if (s <= 60) {
-            box.className = 'timer-danger';
-        } else {
-            box.className = 'timer-normal';
-        }
+        box.className = s <= 60 ? 'timer-danger' : 'timer-normal';
     }
 
     function createBoard() {
@@ -160,6 +191,10 @@
             clearInterval(timerInterval);
             if (cur < levels.length - 1) {
                 document.getElementById('win-screen').classList.remove('hidden');
+                setTimeout(() => {
+                    cur++;
+                    initLevel();
+                }, 2000); // ينتقل للمرحلة التالية بعد ثانيتين تلقائياً
             } else {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('final-screen').classList.remove('hidden');
@@ -167,8 +202,7 @@
         }
     }
 
-    function nextLevel() { cur++; initLevel(); }
     window.onload = initLevel;
 </script>
 </body>
-  </html>
+</html>
