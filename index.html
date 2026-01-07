@@ -3,59 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Token Challenge</title>
+    <title>Free Fire Challenge</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
-        .container { padding: 15px; max-width: 600px; margin: auto; position: relative; }
-        #lang-btn { position: absolute; top: 10px; left: 10px; background: #444; color: white; border: 1px solid #ffd700; padding: 5px 10px; border-radius: 5px; cursor: pointer; z-index: 100; font-size: 12px; }
-        [dir="ltr"] #lang-btn { left: auto; right: 10px; }
-        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin-bottom: 5px; }
-        #timer-box { font-size: 28px; font-weight: bold; margin: 10px 0; padding: 5px; border-radius: 5px; background: #222; display: inline-block; min-width: 120px; border: 1px solid #444; }
-        .timer-normal { color: #00ff00; }
-        .timer-danger { color: #ff0000; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        #preview-img { width: 90%; max-width: 280px; border: 4px solid #ffd700; border-radius: 10px; margin: 10px 0; }
-        #puzzle-board { display: grid; gap: 1px; margin: 10px auto; width: 95vw; height: 95vw; max-width: 450px; max-height: 450px; border: 2px solid #444; background: #111; }
-        .tile { background-repeat: no-repeat; border: 0.1px solid rgba(255,255,255,0.05); cursor: pointer; touch-action: none; }
-        .selected { border: 2px solid #00ff00 !important; z-index: 10; box-shadow: 0 0 15px #00ff00; }
+        body { background: #000; color: white; font-family: sans-serif; text-align: center; margin: 0; user-select: none; }
+        .container { padding: 10px; max-width: 500px; margin: auto; }
+        h1 { color: #ffd700; font-size: 20px; }
+        #timer-box { font-size: 24px; padding: 10px; background: #222; border-radius: 8px; border: 1px solid #444; margin: 10px; display: inline-block; min-width: 100px; }
+        .timer-normal { color: #0f0; }
+        .timer-danger { color: #f00; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        #puzzle-board { display: grid; gap: 2px; margin: 10px auto; width: 95vw; height: 95vw; max-width: 400px; max-height: 400px; background: #111; border: 2px solid #333; }
+        .tile { background-repeat: no-repeat; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .selected { border: 3px solid #0f0 !important; box-shadow: 0 0 15px #0f0; }
         
-        /* الزر الرمادي */
-        #next-level-btn { background: #333; color: #777; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: not-allowed; margin-top: 15px; width: 90%; pointer-events: none; transition: 0.4s; }
-        
-        /* الزر الأخضر القوي */
-        #next-level-btn.success { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; box-shadow: 0 0 25px #28a745; border: 2px solid white; opacity: 1; }
+        /* الزر الرمادي الأساسي */
+        #next-lvl-btn { 
+            background: #444 !important; color: #888 !important; 
+            border: none; padding: 15px; font-size: 18px; font-weight: bold; 
+            border-radius: 30px; width: 90%; margin-top: 20px; 
+            cursor: not-allowed; pointer-events: none; transition: all 0.3s;
+        }
 
-        .hidden { display: none; }
-        #level-info { background: #222; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-bottom: 2px solid #ffd700; font-size: 14px; }
+        /* الزر الأخضر عند النجاح */
+        #next-lvl-btn.active { 
+            background: linear-gradient(180deg, #28a745, #1e7e34) !important; 
+            color: white !important; cursor: pointer !important; 
+            pointer-events: auto !important; box-shadow: 0 0 20px #28a745; 
+            border: 2px solid #fff !important; opacity: 1 !important;
+        }
+
+        .hidden { display: none !important; }
+        #preview-img { width: 80%; border: 3px solid #ffd700; border-radius: 8px; margin: 10px; }
     </style>
 </head>
-<body id="body-tag">
+<body>
 
 <div class="container">
-    <button id="lang-btn" onclick="toggleLanguage()">English</button>
-    <h1 id="main-title">Free Fire Token</h1>
-    <div id="level-info">المرحلة: <span id="lvl">1</span> | القطع: <span id="pts">12</span></div>
+    <h1 id="title">Free Fire Token</h1>
+    <div id="info">المرحلة: <span id="lvl">1</span></div>
     <div id="timer-box" class="timer-normal">02:00</div>
 
     <div id="preview-screen">
-        <p id="preview-msg">احفظ الصورة.. ستختفي سريعاً!</p>
-        <img id="preview-img" src="" alt="Preview">
+        <p>احفظ الصورة جيداً...</p>
+        <img id="preview-img" src="">
     </div>
 
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
-        <p id="help-msg" style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
-        <button id="next-level-btn" onclick="nextStage()">LEVEL 2</button>
+        <button id="next-lvl-btn" onclick="goToNext()">LEVEL 2</button>
     </div>
 
     <div id="fail-screen" class="hidden">
-        <h2 style="color: #ff0000;">انتهى الوقت! ⏰</h2>
-        <button class="selected" style="padding: 10px 20px; background: orange; border-radius: 10px;" onclick="initLevel()">إعادة المحاولة</button>
+        <h2 style="color:red">انتهى الوقت!</h2>
+        <button onclick="startLevel()" style="padding:10px 20px; background:orange; border:none; border-radius:10px;">حاول مرة أخرى</button>
     </div>
 
     <div id="final-screen" class="hidden">
-        <h2 style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
-        <a href="https://t.me/Free_Fire_121"><button style="padding: 15px; background: green; color: white; border-radius: 10px;">استلم جواهرك من هنا</button></a>
+        <h2 style="color:#ffd700">🏆 بطل الأساطير 🏆</h2>
+        <a href="https://t.me/Free_Fire_121"><button style="padding:15px; background:green; color:white; border-radius:10px; border:none;">استلم الجواهر الآن</button></a>
     </div>
 </div>
 
@@ -68,18 +73,18 @@
         { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 10, c: 15 }
     ];
 
-    let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null;
+    let currentLvl = 0, firstTile = null, timer = null, timeLeft = 120;
 
-    function initLevel() {
-        clearInterval(timerInterval);
-        const l = levels[cur];
-        document.getElementById('lvl').innerText = cur + 1;
-        document.getElementById('pts').innerText = l.r * l.c;
+    function startLevel() {
+        clearInterval(timer);
+        const l = levels[currentLvl];
+        document.getElementById('lvl').innerText = currentLvl + 1;
         document.getElementById('preview-img').src = l.img;
         
-        const btn = document.getElementById('next-level-btn');
-        btn.className = ""; // تصفير الكلاسات
-        btn.innerText = cur === levels.length - 1 ? "CLAIM REWARD" : "LEVEL " + (cur + 2);
+        // تصفير الزر
+        const btn = document.getElementById('next-lvl-btn');
+        btn.classList.remove('active');
+        btn.innerText = currentLvl === levels.length - 1 ? "CLAIM REWARD" : "LEVEL " + (currentLvl + 2);
 
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
@@ -88,23 +93,19 @@
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            createBoard();
-            startTimer();
+            setupBoard();
+            runTimer();
         }, 3000);
     }
 
-    function createBoard() {
-        const l = levels[cur], board = document.getElementById('puzzle-board');
+    function setupBoard() {
+        const l = levels[currentLvl], board = document.getElementById('puzzle-board');
         board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
         board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
         board.innerHTML = '';
         
-        // إنشاء القطع بالترتيب الصحيح أولاً
-        let pieces = [];
-        for (let i = 0; i < l.r * l.c; i++) pieces.push(i);
-        
-        // خلط القطع
-        let shuffled = [...pieces].sort(() => Math.random() - 0.5);
+        let ids = Array.from({length: l.r * l.c}, (_, i) => i);
+        let shuffled = [...ids].sort(() => Math.random() - 0.5);
 
         shuffled.forEach(id => {
             const tile = document.createElement('div');
@@ -112,74 +113,68 @@
             tile.style.backgroundImage = `url(${l.img})`;
             tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
             
-            let correctRow = Math.floor(id / l.c);
-            let correctCol = id % l.c;
-            tile.style.backgroundPosition = `${(correctCol / (l.c - 1)) * 100}% ${(correctRow / (l.r - 1)) * 100}%`;
-            
-            tile.dataset.currentId = id; // المعرف الرقمي للقطعة
-            
+            let r = Math.floor(id / l.c), c = id % l.c;
+            tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
+            tile.dataset.id = id;
+
             tile.onclick = () => {
+                if (document.getElementById('next-lvl-btn').classList.contains('active')) return;
                 if (!firstTile) {
                     firstTile = tile;
                     tile.classList.add('selected');
                 } else {
-                    // تبديل البيانات
-                    let tempId = firstTile.dataset.currentId;
-                    let tempBgP = firstTile.style.backgroundPosition;
-
-                    firstTile.dataset.currentId = tile.dataset.currentId;
+                    let tId = firstTile.dataset.id, tBg = firstTile.style.backgroundPosition;
+                    firstTile.dataset.id = tile.dataset.id;
                     firstTile.style.backgroundPosition = tile.style.backgroundPosition;
-
-                    tile.dataset.currentId = tempId;
-                    tile.style.backgroundPosition = tempBgP;
-
+                    tile.dataset.id = tId;
+                    tile.style.backgroundPosition = tBg;
                     firstTile.classList.remove('selected');
                     firstTile = null;
-                    checkWin(); // فحص الفوز بعد كل حركة
+                    check();
                 }
             };
             board.appendChild(tile);
         });
     }
 
-    function checkWin() {
+    function check() {
         const tiles = Array.from(document.querySelectorAll('.tile'));
-        // الفحص يعتمد على الـ ID الرقمي فقط لضمان الدقة
-        const win = tiles.every((tile, index) => parseInt(tile.dataset.currentId) === index);
-        
-        if (win) {
-            clearInterval(timerInterval);
-            const btn = document.getElementById('next-level-btn');
-            btn.classList.add('success'); // تحويل للأخضر
-            console.log("تم التجميع بنجاح!");
+        // فحص صارم: هل كل تايتل في مكانه الصحيح؟
+        const isWin = tiles.every((t, i) => parseInt(t.dataset.id) === i);
+        if (isWin) {
+            clearInterval(timer);
+            const btn = document.getElementById('next-lvl-btn');
+            btn.classList.add('active'); // إجبار ظهور اللون الأخضر
         }
     }
 
-    function startTimer() {
+    function runTimer() {
         timeLeft = 120;
-        timerInterval = setInterval(() => {
+        timer = setInterval(() => {
             timeLeft--;
             let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            document.getElementById('timer-box').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            const box = document.getElementById('timer-box');
+            box.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            box.className = timeLeft <= 30 ? 'timer-danger' : 'timer-normal';
             if (timeLeft <= 0) {
-                clearInterval(timerInterval);
+                clearInterval(timer);
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('fail-screen').classList.remove('hidden');
             }
         }, 1000);
     }
 
-    function nextStage() {
-        if (cur < levels.length - 1) {
-            cur++;
-            initLevel();
+    function goToNext() {
+        if (currentLvl < levels.length - 1) {
+            currentLvl++;
+            startLevel();
         } else {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
         }
     }
 
-    window.onload = initLevel;
+    window.onload = startLevel;
 </script>
 </body>
 </html>
