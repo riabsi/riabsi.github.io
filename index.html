@@ -1,204 +1,65 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Challenge - Testing Mode</title>
-    <style>
-        :root { --primary: #ffd700; --danger: #ff4500; --bg: #0a0a0a; }
-        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; overflow: hidden; user-select: none; }
-        .container { padding: 10px; max-width: 500px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
+// إعدادات اللعبة الأساسية
+let level = 1;
+let fuel = 500; // تم تعديل الوقود إلى 500 كما طلبت يا رياض
+let score = 0;
+
+// مصفوفة الصور (تأكد أن أسماء الصور صحيحة في مجلدك)
+// يمكنك إضافة أسماء صورك هنا (img1.png, img2.jpg .. إلخ)
+const gameImages = [
+    'img1.jpg', 'img2.jpg', 'img3.jpg', 'img4.jpg', 
+    'img5.jpg', 'img6.jpg', 'img7.jpg', 'img8.jpg'
+];
+
+// دالة تشغيل المرحلة - تم تعديلها لتظهر الصور دائماً حتى المرحلة 20
+function loadLevel(currentLevel) {
+    console.log("المرحلة الحالية: " + currentLevel);
+    
+    // حل مشكلة اختفاء الصور: 
+    // نستخدم العمليات الحسابية لضمان اختيار صورة حتى لو تجاوزنا عدد الصور المتاحة
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.innerHTML = ''; // تنظيف اللوحة
+
+    // لنفترض أن كل مرحلة تظهر 4 مربعات صور
+    for (let i = 0; i < 4; i++) {
+        let imgIndex = (currentLevel + i) % gameImages.length; // هذه الحركة تضمن عدم اختفاء الصور
+        let imgTag = document.createElement('img');
+        imgTag.src = 'images/' + gameImages[imgIndex]; // تأكد من مسار المجلد
+        imgTag.alt = "Photo";
+        imgTag.className = "game-img";
         
-        /* Top Stats Bar */
-        .stats-bar { display: flex; justify-content: space-around; background: #1a1a1a; padding: 10px; border-bottom: 2px solid var(--primary); font-weight: bold; font-size: 14px; }
-        .fuel-btn, .time-btn { background: var(--primary); color: black; border: none; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        #timer-box { font-size: 24px; color: #00ff00; min-width: 80px; }
-
-        /* Login Screen */
-        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .login-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid var(--primary); width: 85%; }
-        input { width: 90%; padding: 12px; margin: 20px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: var(--primary); font-size: 22px; text-align: center; outline: none; }
-        .btn-main { background: var(--primary); color: black; padding: 15px 35px; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; }
-
-        /* Board & Game */
-        #puzzle-board { display: grid; gap: 4px; margin: 15px auto; width: 90vw; height: 90vw; max-width: 380px; max-height: 380px; border: 2px solid #333; }
-        .tile { background-repeat: no-repeat; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
-        .selected { border: 3px solid #00ff00 !important; box-shadow: 0 0 15px #00ff00; }
-        .hidden { display: none !important; }
-        #preview-img { width: 85%; border: 3px solid var(--primary); border-radius: 10px; margin: 15px 0; }
+        // إذا لم تجد الصورة، نضع لوناً احتياطياً لكي لا يظهر مربع أسود
+        imgTag.onerror = function() {
+            this.src = 'https://via.placeholder.com/150?text=Image+Level+' + currentLevel;
+        };
         
-        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; width: 90%; font-size: 18px; font-weight: bold; border-radius: 30px; margin: 10px auto; cursor: not-allowed; pointer-events: none; }
-        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer; pointer-events: auto; box-shadow: 0 0 10px #28a745; }
-        
-        .game-title-bottom { margin-top: 10px; color: var(--primary); font-size: 20px; font-weight: bold; letter-spacing: 1px; }
-    </style>
-</head>
-<body>
-
-<div id="login-screen">
-    <div class="login-box">
-        <h2 style="color: var(--primary);">FF CHALLENGE 💎</h2>
-        <p>Enter Username (Must start with &):</p>
-        <input type="text" id="username" value="&" oninput="if(!this.value.startsWith('&')) this.value='&'">
-        <button class="btn-main" onclick="startGame()">START TEST ✅</button>
-    </div>
-</div>
-
-<div class="container">
-    <div class="stats-bar">
-        <div>⛽ <span id="fuel-val">50</span> <button class="fuel-btn" onclick="addFuel()">+10</button></div>
-        <div id="timer-box">02:00</div>
-        <div>Lvl: <span id="lvl-num">1</span> <button class="time-btn" onclick="addTime()">+30s</button></div>
-    </div>
-
-    <div id="preview-screen">
-        <h3 style="color: var(--primary);">Level <span id="p-lvl">1</span> Preview</h3>
-        <img id="preview-img" src="">
-        <p>Get ready to solve...</p>
-    </div>
-
-    <div id="game-screen" class="hidden">
-        <div id="puzzle-board"></div>
-        <button id="next-lvl-btn" onclick="nextLevel()">NEXT LEVEL ➔</button>
-        <div class="game-title-bottom">FREE FIRE PRO CHALLENGE</div>
-    </div>
-
-    <div id="fail-screen" class="hidden">
-        <h2 style="color: var(--danger);">TIME OUT!</h2>
-        <button class="btn-main" onclick="resetCurrentLevel()">RETRY (-10 ⛽)</button>
-    </div>
-
-    <div id="final-screen" class="hidden">
-        <h2 style="color: var(--primary);">TEST COMPLETED! 👑</h2>
-        <p>Your Winner Code:</p>
-        <div id="win-code" style="font-size: 24px; color: #00ff00; padding: 15px; border: 2px dashed var(--primary); background: #222; margin: 20px;"></div>
-        <button class="btn-main" onclick="location.reload()">RESTART TEST</button>
-    </div>
-</div>
-
-<script>
-    const CONFIG = {
-        token: "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A",
-        chatId: "7848457890",
-        adLink: "https://otieu.com/4/10432551"
-    };
-
-    const allImages = [
-        "https://i.ibb.co/MkbtPcTW/image.jpg", "https://i.ibb.co/6RTSMPfy/image.jpg", 
-        "https://i.ibb.co/F42mpCrd/image.jpg", "https://i.ibb.co/xKHHNRMH/image.jpg",
-        "https://i.postimg.cc/66cDVDpc/unnamed-(10).jpg", "https://i.postimg.cc/G345Y96C/unnamed-(12).jpg",
-        "https://i.postimg.cc/wMYThnqn/unnamed-(8).jpg", "https://i.postimg.cc/gchKmhf8/unnamed-(14).jpg",
-        "https://i.postimg.cc/jdKyTFHB/unnamed-(15).jpg", "https://i.postimg.cc/x1ZkXxzW/unnamed-(17).jpg",
-        "https://i.postimg.cc/B6K2ZWwf/unnamed-(13).jpg", "https://i.postimg.cc/rsgsMQTg/unnamed-(18).jpg",
-        "https://i.postimg.cc/JhJhG1mk/unnamed-(19).jpg", "https://i.postimg.cc/Sx5025Gn/unnamed-(8).jpg",
-        "https://i.postimg.cc/Dz82RLxn/unnamed-(22).jpg", "https://i.postimg.cc/cH3dLZy1/unnamed-(24).jpg",
-        "https://i.postimg.cc/5NV2jH28/unnamed-(23).jpg", "https://i.postimg.cc/8zCDrLQK/unnamed-(21).jpg",
-        "https://i.ibb.co/F42mpCrd/image.jpg", 
-        "https://i.postimg.cc/nLcJtprz/unnamed-(20).jpg"
-    ];
-
-    const levels = allImages.map(img => ({ img: img, r: 1, c: 3 })); // 3 pieces for quick test
-
-    let state = { user: "", level: 0, fuel: 50, timeLeft: 120, timer: null, firstTile: null };
-
-    function sendTelegram(msg) {
-        fetch(`https://api.telegram.org/bot${CONFIG.token}/sendMessage?chat_id=${CONFIG.chatId}&text=${encodeURIComponent(msg)}`);
+        gameBoard.appendChild(imgTag);
     }
+    
+    // تحديث واجهة الوقود والمستوى
+    document.getElementById('fuel-display').innerText = `الوقود: ${fuel}`;
+    document.getElementById('level-display').innerText = `المرحلة: ${currentLevel}`;
+}
 
-    function startGame() {
-        state.user = document.getElementById('username').value;
-        if(state.user.length < 3) return alert("Enter Username!");
-        document.getElementById('login-screen').classList.add('hidden');
-        sendTelegram(`🚀 Test Started:\nUser: ${state.user}\nStatus: Active`);
-        initLevel();
+// دالة الانتقال للمرحلة التالية
+function nextLevel() {
+    if (fuel > 0) {
+        level++;
+        fuel -= 10; // خصم وقود عند الانتقال
+        loadLevel(level);
+    } else {
+        alert("انتهى الوقود! حاول مرة أخرى.");
+        resetGame();
     }
+}
 
-    function initLevel() {
-        if(state.level >= 20) return showFinal();
-        clearInterval(state.timer);
-        document.getElementById('lvl-num').innerText = state.level + 1;
-        document.getElementById('p-lvl').innerText = state.level + 1;
-        document.getElementById('fuel-val').innerText = state.fuel;
-        document.getElementById('preview-img').src = levels[state.level].img;
-        document.getElementById('preview-screen').classList.remove('hidden');
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('fail-screen').classList.add('hidden');
-        document.getElementById('next-lvl-btn').classList.remove('active');
-        setTimeout(() => {
-            document.getElementById('preview-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            createBoard();
-            startTimer();
-        }, 2000);
-    }
+// دالة إعادة اللعبة
+function resetGame() {
+    level = 1;
+    fuel = 500;
+    loadLevel(level);
+}
 
-    function startTimer() {
-        state.timeLeft = 120;
-        state.timer = setInterval(() => {
-            state.timeLeft--;
-            let m = Math.floor(state.timeLeft/60), s = state.timeLeft%60;
-            document.getElementById('timer-box').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            if(state.timeLeft <= 0) { clearInterval(state.timer); document.getElementById('fail-screen').classList.remove('hidden'); }
-        }, 1000);
-    }
-
-    function createBoard() {
-        const l = levels[state.level], board = document.getElementById('puzzle-board');
-        board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
-        board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
-        board.innerHTML = '';
-        let ids = [...Array(l.r*l.c).keys()].sort(() => Math.random()-0.5);
-        ids.forEach(id => {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.style.backgroundImage = `url(${l.img})`;
-            tile.style.backgroundSize = `${l.c*100}% ${l.r*100}%`;
-            tile.style.backgroundPosition = `${(id % l.c) * (100 / (l.c - 1))}% 0%`;
-            tile.dataset.id = id;
-            tile.onclick = function() { swap(this); };
-            board.appendChild(tile);
-        });
-    }
-
-    function swap(tile) {
-        if(!state.firstTile) { state.firstTile = tile; tile.classList.add('selected'); return; }
-        let tId = state.firstTile.dataset.id, tPos = state.firstTile.style.backgroundPosition;
-        state.firstTile.dataset.id = tile.dataset.id;
-        state.firstTile.style.backgroundPosition = tile.style.backgroundPosition;
-        tile.dataset.id = tId;
-        tile.style.backgroundPosition = tPos;
-        state.firstTile.classList.remove('selected'); state.firstTile = null;
-        checkWin();
-    }
-
-    function checkWin() {
-        let tiles = Array.from(document.querySelectorAll('.tile'));
-        let isWin = tiles.every((t, i) => parseInt(t.dataset.id) === i);
-        if(isWin) {
-            clearInterval(state.timer);
-            document.getElementById('next-lvl-btn').classList.add('active');
-        }
-    }
-
-    function nextLevel() {
-        if(state.fuel < 10) return alert("Out of Fuel!");
-        window.open(CONFIG.adLink, '_blank');
-        state.fuel -= 10;
-        state.level++;
-        initLevel();
-    }
-
-    function addFuel() { window.open(CONFIG.adLink, '_blank'); state.fuel += 10; document.getElementById('fuel-val').innerText = state.fuel; }
-    function addTime() { window.open(CONFIG.adLink, '_blank'); state.timeLeft += 30; }
-    function resetCurrentLevel() { if(state.fuel < 10) return alert("Refill Fuel!"); state.fuel -= 10; initLevel(); }
-
-    function showFinal() {
-        let code = "RIAD-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('final-screen').classList.remove('hidden');
-        document.getElementById('win-code').innerText = code;
-        sendTelegram(`✅ User Finished All Levels!\nUser: ${state.user}\nWinner Code: ${code}`);
-    }
-</script>
-</body>
-</html>
+// تشغيل اللعبة لأول مرة
+window.onload = () => {
+    loadLevel(level);
+};
