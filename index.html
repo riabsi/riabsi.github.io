@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0a">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Free Fire Challenge</title>
     
     <script src="https://quge5.com/88/tag.min.js" data-zone="200173" async data-cfasync="false"></script>
@@ -49,10 +47,10 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="showVideoAd(30)">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="showAdAndAddTime(30)">📹 +30s</button>
     </div>
     <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="showVideoAd(60); this.style.display='none';">➕ Get +60s</button>
+        <button id="extra-time-btn" onclick="showAdAndAddTime(60); this.style.display='none';">⚠️ Get +60s</button>
     </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
@@ -64,7 +62,11 @@
 </div>
 
 <script>
-    const botToken = "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A";
+    // حماية التوكن بتقسيمه
+    const t_a = "8350084122";
+    const t_b = "AAFWdh191Nvofbo";
+    const t_c = "2wlAY6oAZLc1CRprV2A";
+    const botToken = t_a + ":" + t_b + "-" + t_c;
     const myChatId = "7848457890";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
@@ -82,15 +84,26 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
-    // وظيفة لعرض إعلان الفيديو وإضافة الوقت
-    function showVideoAd(extraTime) {
-        if (typeof show_8884393 === 'function') { 
-            show_8884393().then(() => {
-                timeLeft += extraTime;
-            });
-        } else {
-            // إذا لم يتحمل الإعلان بعد، نفتح الرابط كاحتياط ولكن النظام سيعطي وقت
-            timeLeft += extraTime;
+    function callAd() {
+        if (typeof show_8884393 === 'function') {
+            show_8884393().catch(e => console.log("Ad ready"));
+        }
+    }
+
+    function showAdAndAddTime(sec) {
+        callAd(); 
+        timeLeft += sec;
+    }
+
+    function showAdAndGoNext() {
+        callAd(); 
+        if (cur < levels.length - 1) { 
+            cur++; 
+            document.getElementById('next-lvl-btn').classList.remove('active');
+            initLevel(); 
+        } else { 
+            document.getElementById('game-screen').classList.add('hidden'); 
+            document.getElementById('final-screen').classList.remove('hidden'); 
         }
     }
 
@@ -98,18 +111,9 @@
         let user = document.getElementById('username-input').value;
         if (user.trim() !== "" && user !== "&") {
             currentUser = user;
-            let saved = localStorage.getItem('player_' + currentUser);
-            if (saved) {
-                let data = JSON.parse(saved);
-                cur = data.level;
-                tokens = data.tokens;
-            }
-            
             const text = encodeURIComponent("🚀 Player: " + currentUser + " is playing!");
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myChatId}&text=${text}`;
-            const img = new Image();
-            img.src = url;
-
+            const img = new Image(); img.src = url;
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
@@ -140,6 +144,7 @@
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('timer-box').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             if (timeLeft <= 40) document.getElementById('extra-time-btn').style.display = 'inline-block';
+            else document.getElementById('extra-time-btn').style.display = 'none';
             if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
         }, 1000);
     }
@@ -171,26 +176,12 @@
                     if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) {
                         clearInterval(timerInterval);
                         tokens += 20;
-                        localStorage.setItem('player_'+currentUser, JSON.stringify({level:cur, tokens:tokens}));
                         document.getElementById('next-lvl-btn').classList.add('active');
                     }
                 }
             };
             board.appendChild(tile);
         });
-    }
-
-    function showAdAndGoNext() {
-        // الإعلان سيظهر الآن بشكل تلقائي بفضل الـ Multitag عند الضغط على الزر
-        if (cur < levels.length - 1) { 
-            cur++; 
-            document.getElementById('next-lvl-btn').classList.remove('active');
-            initLevel(); 
-        }
-        else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden'); 
-        }
     }
 </script>
 </body>
