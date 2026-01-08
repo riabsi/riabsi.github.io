@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="monetag" content="90ddf95f92353a8656f86242b4daaa99">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
@@ -89,11 +91,9 @@
                 tokens = data.tokens;
             }
             
-            // طريقة الإرسال المباشرة والمضمونة
             const text = encodeURIComponent("🚀 Player: " + currentUser + " is playing!");
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myChatId}&text=${text}`;
             
-            // استخدام Image للالتفاف على قيود المتصفح (CORS)
             const img = new Image();
             img.src = url;
 
