@@ -1,195 +1,219 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Challenge - Testing Mode</title>
+    <title>Free Fire Challenge</title>
     <style>
-        :root { --primary: #ffd700; --danger: #ff4500; --bg: #0a0a0a; }
-        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; overflow: hidden; user-select: none; }
-        .container { padding: 10px; max-width: 500px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
-        .stats-bar { display: flex; justify-content: space-around; background: #1a1a1a; padding: 10px; border-bottom: 2px solid var(--primary); font-weight: bold; font-size: 14px; }
-        .fuel-btn, .time-btn { background: var(--primary); color: black; border: none; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        #timer-box { font-size: 24px; color: #00ff00; min-width: 80px; }
-        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .login-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid var(--primary); width: 85%; }
-        input { width: 90%; padding: 12px; margin: 20px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: var(--primary); font-size: 22px; text-align: center; outline: none; }
-        .btn-main { background: var(--primary); color: black; padding: 15px 35px; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        #puzzle-board { display: grid; gap: 4px; margin: 15px auto; width: 90vw; height: 90vw; max-width: 380px; max-height: 380px; border: 2px solid #333; }
-        .tile { background-repeat: no-repeat; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
-        .selected { border: 3px solid #00ff00 !important; box-shadow: 0 0 15px #00ff00; }
+        body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; }
+        #timer-box { font-size: 30px; font-weight: bold; margin: 10px 0; padding: 10px; border-radius: 8px; background: #222; display: inline-block; min-width: 120px; border: 1px solid #444; color: #00ff00; }
+        .timer-danger { color: #ff0000 !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; max-height: 400px; border: 2px solid #444; background: #111; }
+        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; touch-action: none; }
+        .selected { border: 3px solid #00ff00 !important; z-index: 10; box-shadow: 0 0 15px #00ff00; }
+        
+        #next-lvl-btn { 
+            background: #444; color: #888; border: none; padding: 15px; 
+            font-size: 20px; font-weight: bold; border-radius: 30px; 
+            width: 90%; margin-top: 20px; cursor: not-allowed; 
+            pointer-events: none; transition: 0.4s; 
+        }
+        
+        #next-lvl-btn.active { 
+            background: #28a745 !important; color: white !important; 
+            cursor: pointer !important; pointer-events: auto !important; 
+            box-shadow: 0 0 20px #28a745; border: 2px solid white; 
+        }
+
+        /* زر زيادة الوقت المطور */
+        #extra-time-btn {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: black; border: 2px solid white; padding: 12px 20px;
+            font-size: 16px; font-weight: bold; border-radius: 25px;
+            margin: 10px 0; cursor: pointer; display: none;
+            box-shadow: 0 0 20px #ffd700;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; margin-top: 20px; }
         .hidden { display: none !important; }
-        #preview-img { width: 85%; border: 3px solid var(--primary); border-radius: 10px; margin: 15px 0; }
-        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; width: 90%; font-size: 18px; font-weight: bold; border-radius: 30px; margin: 10px auto; cursor: not-allowed; pointer-events: none; }
-        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer; pointer-events: auto; box-shadow: 0 0 10px #28a745; }
+        #preview-img { width: 85%; border: 4px solid #ffd700; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-box">
-        <h2 style="color: var(--primary);">FF CHALLENGE 💎</h2>
-        <p>Enter Username (Must start with &):</p>
-        <input type="text" id="username" value="&">
-        <button class="btn-main" onclick="startGame()">START TEST ✅</button>
-    </div>
-</div>
-
 <div class="container">
-    <div class="stats-bar">
-        <div>⛽ <span id="fuel-val">500</span> <button class="fuel-btn" onclick="addFuel()">+10</button></div>
-        <div id="timer-box">02:00</div>
-        <div>Lvl: <span id="lvl-num">1</span> <button class="time-btn" onclick="addTime()">+30s</button></div>
+    <h1>Free Fire Token</h1>
+    <div style="margin-bottom: 5px;">Level: <span id="lvl">1</span></div>
+    <div id="timer-box">02:00</div>
+    
+    <div id="extra-btn-container">
+        <button id="extra-time-btn" onclick="addTimeWithAd()">➕ Get +60s (Watch Ad)</button>
     </div>
 
     <div id="preview-screen">
-        <h3 style="color: var(--primary);">Level <span id="p-lvl">1</span> Preview</h3>
+        <p>Memorize the image!</p>
         <img id="preview-img" src="">
-        <p>Loading Level Image...</p>
     </div>
 
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
-        <button id="next-lvl-btn" onclick="nextLevel()">NEXT LEVEL ➔</button>
+        <p style="color: #aaa; font-size: 13px;">Tap two pieces to swap them</p>
+        <button id="next-lvl-btn" onclick="showAdAndGoNext()">NEXT LEVEL</button>
     </div>
 
     <div id="fail-screen" class="hidden">
-        <h2 style="color: var(--danger);">TIME OUT!</h2>
-        <button class="btn-main" onclick="resetCurrentLevel()">RETRY (-10 ⛽)</button>
+        <h2 style="color: #ff0000;">TIME'S UP! ⏰</h2>
+        <button class="btn-retry" onclick="initLevel()">TRY AGAIN</button>
     </div>
 
     <div id="final-screen" class="hidden">
-        <h2 style="color: var(--primary);">TEST COMPLETED! 👑</h2>
-        <p>Your Winner Code:</p>
-        <div id="win-code" style="font-size: 24px; color: #00ff00; padding: 15px; border: 2px dashed var(--primary); background: #222; margin: 20px;"></div>
-        <button class="btn-main" onclick="location.reload()">RESTART TEST</button>
+        <h2 style="color: #ffd700;">🏆 YOU ARE A LEGEND! 🏆</h2>
+        <a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">CLAIM DIAMONDS</button></a>
     </div>
 </div>
 
 <script>
-    const CONFIG = {
-        token: "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A",
-        chatId: "7848457890",
-        adLink: "https://otieu.com/4/10432551"
-    };
+    // رابط المونتاج الخاص بك
+    const myDirectLink = "https://otieu.com/4/10432551"; 
 
-    // الروابط المباشرة التي طلبتها يا رياض (1-10)
-    const allImages = [
-        "https://i.ibb.co/MkbtPcTW/image.jpg", // 1
-        "https://i.ibb.co/6RTSMPfy/image.jpg", // 2
-        "https://i.ibb.co/F42mpCrd/image.jpg", // 3
-        "https://i.ibb.co/xKHHNRMH/image.jpg", // 4
-        "https://i.ibb.co/MkbtPcTW/image.jpg", // 5
-        "https://i.ibb.co/6RnmWCHM/image.png", // 6
-        "https://i.ibb.co/m5Yy9m8G/image.png", // 7
-        "https://i.ibb.co/zVPX8X8d/image.png", // 8
-        "https://i.ibb.co/TqY9P9y9/image.png", // 9
-        "https://i.ibb.co/MkbtPcTW/image.jpg"  // 10
+    // تم تحديث الفقرة هنا لتصبح 10 مراحل وبسهولة (1 صف و 3 أعمدة)
+    const levels = [
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/6RnmWCHM/image.png', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/m5Yy9m8G/image.png', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/zVPX8X8d/image.png', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/TqY9P9y9/image.png', r: 1, c: 3 },
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 }
     ];
 
-    let state = { user: "", level: 0, fuel: 500, timeLeft: 120, timer: null, firstTile: null };
-
-    function sendTelegram(msg) {
-        fetch(`https://api.telegram.org/bot${CONFIG.token}/sendMessage?chat_id=${CONFIG.chatId}&text=${encodeURIComponent(msg)}`);
-    }
-
-    function startGame() {
-        state.user = document.getElementById('username').value;
-        document.getElementById('login-screen').classList.add('hidden');
-        initLevel();
-    }
+    let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null;
 
     function initLevel() {
-        if(state.level >= 10) return showFinal();
-        clearInterval(state.timer);
-        document.getElementById('lvl-num').innerText = state.level + 1;
-        document.getElementById('p-lvl').innerText = state.level + 1;
-        document.getElementById('fuel-val').innerText = state.fuel;
+        clearInterval(timerInterval);
+        firstTile = null;
+        const l = levels[cur];
+        document.getElementById('lvl').innerText = cur + 1;
+        document.getElementById('preview-img').src = l.img;
+        document.getElementById('extra-time-btn').style.display = 'none';
         
-        let imgUrl = allImages[state.level % allImages.length];
-        
-        const img = new Image();
-        img.src = imgUrl;
-        img.onload = () => {
-            document.getElementById('preview-img').src = imgUrl;
-            document.getElementById('preview-screen').classList.remove('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('fail-screen').classList.add('hidden');
-            document.getElementById('next-lvl-btn').classList.remove('active');
-            
-            setTimeout(() => {
-                document.getElementById('preview-screen').classList.add('hidden');
-                document.getElementById('game-screen').classList.remove('hidden');
-                createBoard(imgUrl);
-                startTimer();
-            }, 2500);
-        };
+        const btn = document.getElementById('next-lvl-btn');
+        btn.classList.remove('active');
+        btn.innerText = cur === levels.length - 1 ? "FINISH" : "NEXT LEVEL";
+
+        document.getElementById('preview-screen').classList.remove('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('fail-screen').classList.add('hidden');
+
+        setTimeout(() => {
+            document.getElementById('preview-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            createBoard();
+            startTimer();
+        }, 3000);
     }
 
     function startTimer() {
-        state.timeLeft = 120;
-        state.timer = setInterval(() => {
-            state.timeLeft--;
-            let m = Math.floor(state.timeLeft/60), s = state.timeLeft%60;
-            document.getElementById('timer-box').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            if(state.timeLeft <= 0) { clearInterval(state.timer); document.getElementById('fail-screen').classList.remove('hidden'); }
+        timeLeft = 120;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            const box = document.getElementById('timer-box');
+            box.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            
+            if (timeLeft <= 40 && timeLeft > 0) {
+                box.className = 'timer-danger';
+                document.getElementById('extra-time-btn').style.display = 'inline-block';
+            } else {
+                box.className = '';
+                document.getElementById('extra-time-btn').style.display = 'none';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('fail-screen').classList.remove('hidden');
+            }
         }, 1000);
     }
 
-    function createBoard(imgUrl) {
-        const rows = 1, cols = 3; 
-        const board = document.getElementById('puzzle-board');
+    function addTimeWithAd() {
+        const adWindow = window.open(myDirectLink, '_blank');
+        if (!adWindow) {
+            window.location.href = myDirectLink;
+        }
+        timeLeft += 60;
+        document.getElementById('extra-time-btn').style.display = 'none';
+    }
+
+    function createBoard() {
+        const l = levels[cur], board = document.getElementById('puzzle-board');
+        board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
+        board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
         board.innerHTML = '';
-        let ids = [...Array(rows*cols).keys()].sort(() => Math.random()-0.5);
-        ids.forEach(id => {
+        
+        let ids = Array.from({length: l.r * l.c}, (_, i) => i);
+        let shuffled = [...ids].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach(id => {
             const tile = document.createElement('div');
             tile.className = 'tile';
-            tile.style.backgroundImage = `url('${imgUrl}')`;
-            tile.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
-            // معادلة الحركة الصحيحة
-            let xPos = (id % cols) * (100 / (cols - 1));
-            tile.style.backgroundPosition = `${xPos}% 0%`;
+            tile.style.backgroundImage = `url(${l.img})`;
+            tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
+            let r = Math.floor(id / l.c), c = id % l.c;
+            tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
             tile.dataset.id = id;
-            tile.onclick = function() { swap(this); };
+
+            tile.onclick = function() {
+                if (document.getElementById('next-lvl-btn').classList.contains('active')) return;
+                if (!firstTile) {
+                    firstTile = this; this.classList.add('selected');
+                } else {
+                    let tId = firstTile.dataset.id, tBg = firstTile.style.backgroundPosition;
+                    firstTile.dataset.id = this.dataset.id;
+                    firstTile.style.backgroundPosition = this.style.backgroundPosition;
+                    this.dataset.id = tId;
+                    this.style.backgroundPosition = tBg;
+                    firstTile.classList.remove('selected');
+                    firstTile = null;
+                    checkWin();
+                }
+            };
             board.appendChild(tile);
         });
     }
 
-    function swap(tile) {
-        if(!state.firstTile) { state.firstTile = tile; tile.classList.add('selected'); return; }
-        let tId = state.firstTile.dataset.id, tPos = state.firstTile.style.backgroundPosition;
-        state.firstTile.dataset.id = tile.dataset.id;
-        state.firstTile.style.backgroundPosition = tile.style.backgroundPosition;
-        tile.dataset.id = tId;
-        tile.style.backgroundPosition = tPos;
-        state.firstTile.classList.remove('selected'); state.firstTile = null;
-        checkWin();
-    }
-
     function checkWin() {
-        let tiles = Array.from(document.querySelectorAll('.tile'));
-        let isWin = tiles.every((t, i) => parseInt(t.dataset.id) === i);
-        if(isWin) { clearInterval(state.timer); document.getElementById('next-lvl-btn').classList.add('active'); }
+        const tiles = Array.from(document.querySelectorAll('.tile'));
+        const isWin = tiles.every((t, i) => parseInt(t.dataset.id) === i);
+        if (isWin) {
+            clearInterval(timerInterval);
+            document.getElementById('next-lvl-btn').classList.add('active');
+            document.getElementById('extra-time-btn').style.display = 'none';
+        }
     }
 
-    function nextLevel() {
-        window.open(CONFIG.adLink, '_blank');
-        state.fuel -= 10;
-        state.level++;
-        initLevel();
+    function showAdAndGoNext() {
+        const adWindow = window.open(myDirectLink, '_blank');
+        if (cur < levels.length - 1) {
+            cur++;
+            initLevel();
+        } else {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('final-screen').classList.remove('hidden');
+        }
     }
 
-    function addFuel() { window.open(CONFIG.adLink, '_blank'); state.fuel += 10; document.getElementById('fuel-val').innerText = state.fuel; }
-    function addTime() { window.open(CONFIG.adLink, '_blank'); state.timeLeft += 30; }
-    function resetCurrentLevel() { state.fuel -= 10; initLevel(); }
-
-    function showFinal() {
-        let code = "RIAD-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('final-screen').classList.remove('hidden');
-        document.getElementById('win-code').innerText = code;
-        sendTelegram(`✅ User Finished!\nUser: ${state.user}\nCode: ${code}`);
-    }
+    window.onload = initLevel;
 </script>
 </body>
 </html>
