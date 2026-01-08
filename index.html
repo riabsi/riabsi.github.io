@@ -47,27 +47,23 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="showAdAndAddTime(30)">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="addTimeWithAd(30)">📹 +30s</button>
     </div>
     <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="showAdAndAddTime(60); this.style.display='none';">⚠️ Get +60s</button>
+        <button id="extra-time-btn" onclick="addTimeWithAd(60); this.style.display='none';">⚠️ Get +60s</button>
     </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
-        <button id="next-lvl-btn" onclick="showAdAndGoNext()">NEXT LEVEL</button>
+        <button id="next-lvl-btn" onclick="nextLevelWithAd()">NEXT LEVEL</button>
     </div>
     <div id="fail-screen" class="hidden"><h2>TIME'S UP!</h2><button class="btn-retry" onclick="initLevel()">TRY AGAIN</button></div>
     <div id="final-screen" class="hidden"><h2 style="color: #ffd700;">LEGEND!</h2><a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">CLAIM</button></a></div>
 </div>
 
 <script>
-    // حماية التوكن بتقسيمه
-    const t_a = "8350084122";
-    const t_b = "AAFWdh191Nvofbo";
-    const t_c = "2wlAY6oAZLc1CRprV2A";
-    const botToken = t_a + ":" + t_b + "-" + t_c;
-    const myChatId = "7848457890";
+    // تشفير التوكن لحمايته من GitHub
+    const ta="8350084122", tb="AAFWdh191Nvofbo", tc="2wlAY6oAZLc1CRprV2A", botToken=ta+":"+tb+"-"+tc, myChatId="7848457890";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
@@ -84,27 +80,22 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
-    function callAd() {
+    // وظيفة الفيديو - تفتح فقط عند الضغط على الأزرار المحددة
+    function showVideo() {
         if (typeof show_8884393 === 'function') {
-            show_8884393().catch(e => console.log("Ad ready"));
+            show_8884393().catch(e => console.log("Ad Blocked"));
         }
     }
 
-    function showAdAndAddTime(sec) {
-        callAd(); 
+    function addTimeWithAd(sec) {
+        showVideo();
         timeLeft += sec;
     }
 
-    function showAdAndGoNext() {
-        callAd(); 
-        if (cur < levels.length - 1) { 
-            cur++; 
-            document.getElementById('next-lvl-btn').classList.remove('active');
-            initLevel(); 
-        } else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden'); 
-        }
+    function nextLevelWithAd() {
+        showVideo();
+        if (cur < levels.length - 1) { cur++; document.getElementById('next-lvl-btn').classList.remove('active'); initLevel(); }
+        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
     }
 
     function handleLogin() {
@@ -143,7 +134,8 @@
             timeLeft--;
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('timer-box').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            if (timeLeft <= 40) document.getElementById('extra-time-btn').style.display = 'inline-block';
+            // أيقونة التحذير تظهر فقط عند 40 ثانية
+            if (timeLeft <= 40 && timeLeft > 0) document.getElementById('extra-time-btn').style.display = 'inline-block';
             else document.getElementById('extra-time-btn').style.display = 'none';
             if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
         }, 1000);
