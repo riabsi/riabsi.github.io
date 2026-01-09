@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Free Fire Challenge</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
@@ -46,10 +45,10 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="openDoubleAds(); timeLeft+=30;">📹 +30s</button>
     </div>
     <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
+        <button id="extra-time-btn" onclick="openDoubleAds(); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
     </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
@@ -63,7 +62,6 @@
 <script>
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
-    // تعريف الإعلان الجديد
     const newAdLink = "https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
@@ -88,6 +86,14 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
+    // وظيفة فتح إعلانين معا مع حماية
+    function openDoubleAds() {
+        window.open(adLink, '_blank');
+        setTimeout(() => {
+            window.open(newAdLink, '_blank');
+        }, 400);
+    }
+
     function handleLogin() {
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
@@ -96,9 +102,12 @@
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // كود الرسالة الأصلي (ممنوع اللمس)
+            // 1. إرسال السيرفر أولا لضمان وصول الرسالة
             let msgImg = new Image();
             msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
+
+            // 2. فتح إعلان واحد فقط عند الدخول
+            window.open(adLink, '_blank');
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
@@ -107,17 +116,12 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        
-        // كود الرسالة الأصلي عند الفوز (ممنوع اللمس)
         let updateImg = new Image();
         updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
-        // فتح الإعلان القديم والجديد معاً عند الضغط
-        window.open(adLink, '_blank');
-        window.open(newAdLink, '_blank');
-        
+        // إرسال البيانات ثم فتح الإعلانين
         if (cur < levels.length - 1) { 
             cur++; 
             saveProgress(); 
@@ -127,6 +131,8 @@
             document.getElementById('game-screen').classList.add('hidden'); 
             document.getElementById('final-screen').classList.remove('hidden'); 
         }
+        
+        openDoubleAds();
     }
 
     function initLevel() {
@@ -154,7 +160,11 @@
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('timer-box').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             if (timeLeft <= 40) document.getElementById('extra-time-btn').style.display = 'inline-block';
-            if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
+            if (timeLeft <= 0) { 
+                clearInterval(timerInterval); 
+                document.getElementById('game-screen').classList.add('hidden'); 
+                document.getElementById('fail-screen').classList.remove('hidden'); 
+            }
         }, 1000);
     }
 
