@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-navbutton-color" content="#0a0a0a">
+    
     <title>Free Fire Challenge</title>
     <style>
+        /* إضافة خلفية سوداء للجسم لضمان عدم ظهور بياض عند التحميل */
+        html { background-color: #0a0a0a; }
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; }
@@ -57,12 +64,16 @@
 </div>
 
 <script>
-    // تم إرجاع روابط السيرفر الأصلية
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const oldAdLink = "https://otieu.com/4/10432551";
     const newAdLink = "https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+
+    function sendToTelegram(user, level) {
+        let msgImg = new Image();
+        msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(user) + "&lvl=" + level + "&t=" + Date.now();
+    }
 
     const userInput = document.getElementById('username-input');
     userInput.addEventListener('input', function() {
@@ -91,11 +102,7 @@
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
-
-            // تم إرجاع إرسال إشعار تليجرام (خدعة الصورة)
-            let msgImg = new Image();
-            msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
-
+            sendToTelegram(userVal, cur + 1);
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
@@ -103,17 +110,12 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        
-        // إرسال ليفل جديد لتليجرام بصورة (كما كان)
-        let updateImg = new Image();
-        updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
+        sendToTelegram(currentUser, cur + 1);
     }
 
     function nextLevelWithAd() {
-        // فتح الإعلان القديم ثم الجديد
         window.open(oldAdLink, '_blank');
         window.open(newAdLink, '_blank');
-        
         if (cur < levels.length - 1) { 
             cur++; 
             saveProgress(); 
