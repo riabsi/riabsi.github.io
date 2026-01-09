@@ -8,7 +8,7 @@
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
         
-        /* دمج العنوان مع الجوهرة */
+        /* العنوان المدمج مع الجوهرة */
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -20,21 +20,23 @@
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* شريط المعلومات العلوي مع التوقيت الجديد */
+        /* شريط المعلومات العلوي */
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #333; }
         
         #music-player { background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; display: flex; align-items: center; gap: 3px; }
         .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
         #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
 
-        /* تنسيق الوقت الجديد في الهيدر */
         #timer-box { font-size: 18px; font-weight: bold; color: #00ff00; display: flex; align-items: center; gap: 5px; }
         .timer-red { color: #ff0000 !important; animation: blink 0.6s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* تعديل مستطيل الإعلانات: ارتفاع 55 بكسل وإطار ذهبي */
-        .ad-ticker-box { background: #222; border: 2px solid #ffd700; height: 55px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
-        #external-ads { white-space: nowrap; position: absolute; animation: marquee 30s linear infinite; color: #ffd700; font-weight: bold; font-size: 16px; width: 100%; }
+        /* مستطيل الإعلانات الديناميكي - ارتفاع 55 بكسل مع إطار ذهبي */
+        .ad-ticker-box { background: #111; border: 2px solid #ffd700; height: 55px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 8px rgba(255, 214, 0, 0.4); }
+        #external-ads { white-space: nowrap; position: absolute; width: 100%; color: #ffd700; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        
+        /* أنيميشن التحريك للنصوص فقط */
+        .scrolling-text { animation: marquee 20s linear infinite; white-space: nowrap; position: absolute; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
@@ -84,7 +86,7 @@
     </div>
 
     <div class="ad-ticker-box">
-        <div id="external-ads">🚀 CRY BABY TOKEN: JOIN THE FUTURE REWARDS! | STAY TUNED FOR UPDATES 🚀</div>
+        <div id="external-ads">Loading...</div>
     </div>
 
     <div id="game-area">
@@ -100,8 +102,30 @@
 </div>
 
 <script>
-    // جلب الإعلانات الخارجية
-    fetch('riad-ads.txt').then(r => r.text()).then(d => { if(d) document.getElementById('external-ads').innerText = d; }).catch(()=>null);
+    // وظيفة سحب المحتوى الديناميكي من ملف video_m
+    function loadDynamicAd() {
+        fetch('video_m')
+            .then(response => response.text())
+            .then(data => {
+                const container = document.getElementById('external-ads');
+                // التحقق إذا كان المحتوى يحتوي على كود HTML (فيديو، صورة، إطار)
+                if (data.includes('<') && data.includes('>')) {
+                    container.classList.remove('scrolling-text');
+                    container.style.position = "relative";
+                    container.innerHTML = data;
+                } else {
+                    // إذا كان نصاً عادياً، نقوم بتحريكه
+                    container.classList.add('scrolling-text');
+                    container.innerText = data;
+                }
+            })
+            .catch(err => {
+                document.getElementById('external-ads').innerText = "🚀 Welcome Player! 🚀";
+            });
+    }
+
+    // تشغيل جلب الإعلان عند فتح اللعبة
+    loadDynamicAd();
 
     const tracks = [];
     for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
@@ -113,7 +137,7 @@
     function loadTrack(idx) {
         audio.src = tracks[idx];
         trackNameDisp.innerText = "Music " + (idx + 1);
-        audio.play().catch(() => console.log("Music ready"));
+        audio.play().catch(() => {});
     }
 
     function toggleMusic() {
@@ -130,17 +154,9 @@
     }
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
-    const userInput = document.getElementById('username-input');
-
-    function sendLog(user, lvl) {
-        const myKey = "Riad_FF_2026";
-        let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
-        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        setTimeout(() => { if(logger) logger.close(); }, 1000);
-    }
 
     function handleLogin() {
-        let userVal = userInput.value.trim();
+        let userVal = document.getElementById('username-input').value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
@@ -148,7 +164,6 @@
             tokens = cur * 20;
             audio.volume = 0.5;
             loadTrack(currentTrackIdx);
-            sendLog(currentUser, cur + 1);
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
@@ -156,7 +171,6 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1);
     }
 
     const levels = [
