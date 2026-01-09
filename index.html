@@ -57,7 +57,6 @@
 </div>
 
 <script>
-    // التعديل الجوهري للرابط لتخطي الحماية
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
@@ -83,41 +82,38 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
-    async function handleLogin() {
+    function handleLogin() {
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
-            const btn = document.getElementById('start-btn-el');
-            btn.innerText = "LOADING...";
-            btn.disabled = true;
+            
+            // الحفظ في ذاكرة المتصفح (مضمون 100%)
+            let saved = localStorage.getItem('ff_lvl_' + userVal);
+            cur = saved ? parseInt(saved) : 0;
+            tokens = cur * 20;
 
-            try {
-                // استخدام NO-CORS لتخطي منع المتصفح وضمان عمل الزر
-                const response = await fetch(SERVER_URL + "?task=get&user=" + encodeURIComponent(userVal));
-                const result = await response.json();
-                cur = parseInt(result.lvl) || 0;
-                tokens = cur * 20;
-            } catch (e) {
-                console.log("Server Handshake Done");
-            }
-            
-            // إرسال تنبيه دخول
-            new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
-            
+            // إرسال إشعار دخول للسيرفر (عن طريق صورة لضمان عدم التعليق)
+            let img = new Image();
+            img.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
+
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
     }
 
-    function saveLevelToServer(lvl) {
-        new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + lvl;
+    function saveProgress(lvl) {
+        // حفظ في المتصفح
+        localStorage.setItem('ff_lvl_' + currentUser, lvl);
+        // إرسال إشعار للسيرفر
+        let img = new Image();
+        img.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (lvl + 1);
     }
 
     function nextLevelWithAd() {
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
             cur++; 
-            saveLevelToServer(cur + 1);
+            saveProgress(cur); 
             document.getElementById('next-lvl-btn').classList.remove('active'); 
             initLevel(); 
         } else { 
