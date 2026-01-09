@@ -13,31 +13,28 @@
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
         
-        .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
-        .goal-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .goal-btn { background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .goal-btn:hover, .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
+        .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; }
+        .goal-buttons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .goal-btn { background: #333; color: #fff; border: 1px solid #555; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
 
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; text-align: left; }
-        .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4); }
+        .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* باقي التنسيقات */
+        /* تصغير مشغل الموسيقى */
+        #music-player { position: fixed; top: 8px; right: 8px; background: rgba(20, 20, 20, 0.9); border: 1px solid #ffd700; border-radius: 20px; padding: 4px 10px; z-index: 10001; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 14px; padding: 0 3px; }
+        #track-name { color: #ffd700; font-weight: bold; font-size: 10px; white-space: nowrap; }
+
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
-        .timer-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; }
         #timer-box { font-size: 30px; font-weight: bold; padding: 5px 15px; border-radius: 8px; background: #222; border: 1px solid #444; color: #00ff00; min-width: 110px; }
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
         .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; touch-action: none; }
-        .selected { border: 3px solid #00ff00 !important; z-index: 10; box-shadow: 0 0 15px #00ff00; }
+        .selected { border: 3px solid #00ff00 !important; }
         #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; }
         #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
-        #extra-time-btn { display: none; background: linear-gradient(45deg, #ffd700, #ff8c00); color: black; border: 2px solid white; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 25px; margin: 10px 0; }
         .hidden { display: none !important; }
-        .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; margin-top: 20px; }
-        #preview-img { width: 85%; border: 4px solid #ffd700; border-radius: 10px; }
-        
-        /* مشغل الموسيقى */
-        #music-player { position: fixed; top: 10px; right: 10px; background: rgba(34, 34, 34, 0.9); border: 1px solid #ffd700; border-radius: 15px; padding: 5px 10px; z-index: 10001; display: flex; align-items: center; gap: 8px; font-size: 11px; }
-        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 0 5px; }
+        .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -46,10 +43,10 @@
     <button class="m-btn" onclick="prevTrack()">⏮</button>
     <button class="m-btn" id="play-pause-btn" onclick="toggleMusic()">🔊</button>
     <button class="m-btn" onclick="nextTrack()">⏭</button>
-    <span id="track-name" style="color:#ffd700; font-weight:bold;">Track 1</span>
+    <span id="track-name">Track 1</span>
 </div>
 
-<audio id="bg-music"></audio>
+<audio id="bg-music" preload="auto"></audio>
 
 <div id="login-screen">
     <div class="login-box">
@@ -61,7 +58,7 @@
         <hr style="border: 0.5px solid #333; margin-bottom: 20px;">
         <h3 style="color: #ffd700; margin: 0;">Login</h3>
         <input type="text" id="username-input" class="user-input" value="&">
-        <button class="start-btn" id="start-btn-el" onclick="handleLogin()">START GAME</button>
+        <button class="start-btn" onclick="handleLogin()">START GAME</button>
     </div>
 </div>
 
@@ -71,14 +68,8 @@
         <span>Level: <span id="lvl">1</span></span>
         <span style="color: #ffd700;">💎 Tokens: <span id="tokens-val">0</span></span>
     </div>
-    <div class="timer-container">
-        <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=30;">📹 +30s</button>
-    </div>
-    <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
-    </div>
-    <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
+    <div id="timer-box">02:00</div>
+    <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src="" style="width:85%; border-radius:10px; border:4px solid #ffd700;"></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
         <button id="next-lvl-btn" onclick="nextLevelWithAd()">NEXT LEVEL</button>
@@ -91,7 +82,7 @@
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
-    // --- إعدادات الموسيقى ---
+    // --- نظام الموسيقى المحسن ---
     const tracks = [];
     for(let i=1; i<=15; i++) { tracks.push(`http://38.244.129.249/${i}.mp3`); }
 
@@ -103,39 +94,60 @@
     function loadTrack(idx) {
         audio.src = tracks[idx];
         trackNameDisp.innerText = "Track " + (idx + 1);
-        audio.play().catch(e => console.log("Music ready"));
+        // محاولة التشغيل مع معالجة خطأ المنع من المتصفح
+        let playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(_ => { playPauseBtn.innerText = "🔊"; })
+            .catch(error => { console.log("Playback failed, waiting for user interaction"); });
+        }
     }
 
     function toggleMusic() {
         if (audio.paused) { audio.play(); playPauseBtn.innerText = "🔊"; }
         else { audio.pause(); playPauseBtn.innerText = "🔇"; }
     }
-
     function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % tracks.length; loadTrack(currentTrackIdx); }
     function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
     audio.onended = nextTrack;
 
-    // --- وظائف واجهة الدخول الجديدة ---
     function selectGoal(btn) {
         document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
 
-    // --- كود اللعبة الأصلي ---
+    // --- اللعبة ---
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const userInput = document.getElementById('username-input');
 
-    function sendLog(user, lvl) {
-        const myKey = "Riad_FF_2026";
-        let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
-        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        if (logger) { setTimeout(() => { logger.close(); }, 1000); }
+    function handleLogin() {
+        let userVal = userInput.value.trim();
+        if (userVal !== "" && userVal !== "&") {
+            currentUser = userVal;
+            // تفعيل الصوت فور الضغط على الزر (لحل مشكلة المتصفح)
+            audio.volume = 0.5;
+            loadTrack(currentTrackIdx);
+            
+            document.getElementById('login-screen').style.display = 'none';
+            initLevel();
+        }
     }
 
-    userInput.addEventListener('input', function() {
-        if (!this.value.startsWith('&')) { this.value = '&' + this.value.replace(/^&*/, ''); }
-    });
+    function initLevel() {
+        clearInterval(timerInterval);
+        const l = levels[cur];
+        document.getElementById('lvl').innerText = cur + 1;
+        document.getElementById('tokens-val').innerText = tokens;
+        document.getElementById('preview-img').src = l.img;
+        document.getElementById('preview-screen').classList.remove('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+        setTimeout(() => {
+            document.getElementById('preview-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            createBoard(); startTimer();
+        }, 3000);
+    }
 
+    // (بقية دوال اللعبة createBoard, startTimer, إلخ... كما هي في كودك الأصلي)
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
         { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
@@ -149,64 +161,12 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
-    function handleLogin() {
-        let userVal = userInput.value.trim();
-        if (userVal !== "" && userVal !== "&") {
-            currentUser = userVal;
-            let saved = localStorage.getItem('ff_save_lvl_' + userVal);
-            cur = saved ? parseInt(saved) : 0;
-            tokens = cur * 20;
-            sendLog(userVal, cur + 1);
-            
-            audio.volume = 0.4;
-            loadTrack(currentTrackIdx);
-
-            document.getElementById('login-screen').style.display = 'none';
-            initLevel();
-        }
-    }
-
-    function saveProgress() {
-        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1);
-    }
-
-    function nextLevelWithAd() {
-        window.open(adLink, '_blank');
-        if (cur < levels.length - 1) { 
-            cur++; saveProgress(); 
-            document.getElementById('next-lvl-btn').classList.remove('active'); 
-            initLevel(); 
-        } else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden'); 
-        }
-    }
-
-    function initLevel() {
-        clearInterval(timerInterval);
-        firstTile = null;
-        const l = levels[cur];
-        document.getElementById('lvl').innerText = cur + 1;
-        document.getElementById('tokens-val').innerText = tokens;
-        document.getElementById('preview-img').src = l.img;
-        document.getElementById('preview-screen').classList.remove('hidden');
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('fail-screen').classList.add('hidden');
-        setTimeout(() => {
-            document.getElementById('preview-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            createBoard(); startTimer();
-        }, 3000);
-    }
-
     function startTimer() {
         timeLeft = 120;
         timerInterval = setInterval(() => {
             timeLeft--;
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('timer-box').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            if (timeLeft <= 40) document.getElementById('extra-time-btn').style.display = 'inline-block';
             if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
         }, 1000);
     }
@@ -243,6 +203,15 @@
             };
             board.appendChild(tile);
         });
+    }
+
+    function nextLevelWithAd() {
+        window.open(adLink, '_blank');
+        if (cur < levels.length - 1) { 
+            cur++; document.getElementById('next-lvl-btn').classList.remove('active'); initLevel(); 
+        } else { 
+            document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); 
+        }
     }
 </script>
 </body>
