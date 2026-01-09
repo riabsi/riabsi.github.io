@@ -1,11 +1,11 @@
 <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 55px; width: 100%; box-sizing: border-box;">
     
-    <img src="رابط_الصورة_الأولى" style="height: 35px; width: auto; object-fit: contain;">
+    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; object-fit: contain;">
 
     <span style="color: #ffd700; font-weight: bold; font-size: 15px; text-align: center; flex-grow: 1;">
         ترقبو الجديد لدينا قريباً 🚀
     </span>
 
-    <img src="رابط_الصورة_الثانية" style="height: 35px; width: auto; object-fit: contain;">
+    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; object-fit: contain;">
 
 </div>
