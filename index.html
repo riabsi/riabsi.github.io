@@ -46,10 +46,10 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); setTimeout(()=>window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'), 200); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="openAdsAndAddSeconds(30)">📹 +30s</button>
     </div>
     <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); setTimeout(()=>window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'), 200); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
+        <button id="extra-time-btn" onclick="openAdsAndAddSeconds(60); this.style.display='none';">⚠️ Get +60s</button>
     </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
@@ -66,6 +66,13 @@
     const newAdLink = "https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+
+    // دالة جديدة لفتح الإعلانات دون التأثير على الرسائل
+    function openAdsAndAddSeconds(seconds) {
+        window.open(adLink, '_blank');
+        setTimeout(() => { window.open(newAdLink, '_blank'); }, 200);
+        timeLeft += seconds;
+    }
 
     const userInput = document.getElementById('username-input');
     userInput.addEventListener('input', function() {
@@ -95,7 +102,7 @@
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // تم وضع إرسال الرسالة "أولاً" قبل أي شيء آخر لضمان وصولها
+            // كود الرسالة الأصلي
             let msgImg = new Image();
             msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
 
@@ -106,22 +113,18 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        
-        // إرسال الرسالة أولاً لضمان وصولها لسيرفرك
         let updateImg = new Image();
         updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
-        // نرسل الحفظ أولاً (الذي يحتوي على رسالة التليجرام)
-        saveProgress(); 
-
-        // ثم نفتح الإعلانات
+        // نفتح الإعلانات أولاً
         window.open(adLink, '_blank');
-        setTimeout(() => window.open(newAdLink, '_blank'), 300);
-        
+        setTimeout(() => { window.open(newAdLink, '_blank'); }, 200);
+
         if (cur < levels.length - 1) { 
             cur++; 
+            saveProgress(); 
             document.getElementById('next-lvl-btn').classList.remove('active'); 
             initLevel(); 
         } else { 
