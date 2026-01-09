@@ -57,6 +57,7 @@
 </div>
 
 <script>
+    // نستخدم الرابط لإرسال الإشعارات فقط
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
@@ -87,33 +88,31 @@
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             
-            // الحفظ في ذاكرة المتصفح (مضمون 100%)
-            let saved = localStorage.getItem('ff_lvl_' + userVal);
+            // استرجاع الحفظ من ذاكرة المتصفح
+            let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // إرسال إشعار دخول للسيرفر (عن طريق صورة لضمان عدم التعليق)
-            let img = new Image();
-            img.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
+            // إرسال تنبيه دخول للسيرفر
+            new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
     }
 
-    function saveProgress(lvl) {
-        // حفظ في المتصفح
-        localStorage.setItem('ff_lvl_' + currentUser, lvl);
-        // إرسال إشعار للسيرفر
-        let img = new Image();
-        img.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (lvl + 1);
+    function saveProgress() {
+        // حفظ في ذاكرة المتصفح
+        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
+        // إشعار للسيرفر
+        new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1);
     }
 
     function nextLevelWithAd() {
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
             cur++; 
-            saveProgress(cur); 
+            saveProgress(); 
             document.getElementById('next-lvl-btn').classList.remove('active'); 
             initLevel(); 
         } else { 
