@@ -3,42 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire - Fixed Engine</title>
+    <title>Free Fire Elite - Riad Pro Edition</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 10px; max-width: 500px; margin: auto; }
         
         /* شاشة الدخول الفخمة */
-        #login-screen { position: fixed; inset: 0; background: #0a0a0a; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: #1a1a1a; padding: 25px; border-radius: 20px; border: 2px solid #ffd700; width: 85%; }
-        .goal-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; cursor: pointer; }
-        .goal-btn.active { background: #ffd700; color: black; font-weight: bold; }
+        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid #ffd700; width: 85%; box-shadow: 0 0 25px #ffd70044; }
+        .goal-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; cursor: pointer; font-weight: bold; }
+        .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
 
         /* الهيدر والموسيقى */
-        .header-main { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; margin: 5px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; }
-        #music-mini-player { display: flex; align-items: center; gap: 5px; background: #222; padding: 5px 10px; border-radius: 20px; border: 1px solid #ffd700; }
-        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; }
+        .header-main { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; margin: 10px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        #music-mini-player { display: flex; align-items: center; gap: 8px; background: #222; padding: 5px 12px; border-radius: 20px; border: 1px solid #ffd700; }
+        .m-btn { background: none; border: none; color: white; font-size: 16px; cursor: pointer; }
 
         /* الجولد والوقت */
         .gold-box { display: flex; flex-direction: column; align-items: center; }
-        .get-gold-btn { background: #28a745; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; border: none; margin-top: 4px; }
-        .timer-display { font-size: 32px; font-weight: bold; color: #00ff00; margin: 5px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .get-gold-btn { background: #28a745; color: white; font-size: 10px; padding: 3px 8px; border-radius: 10px; border: none; margin-top: 4px; cursor: pointer; }
+        .timer-display { font-size: 35px; font-weight: bold; color: #00ff00; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; }
         .timer-red { color: #ff0000 !important; animation: blink 0.5s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* شريط الأخبار */
-        .ad-ticker-box { background: #000; border: 1px solid #444; height: 40px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px; border-radius: 8px; }
-        #external-ads { white-space: nowrap; position: absolute; animation: marquee 15s linear infinite; color: #ffd700; font-weight: bold; }
+        /* شريط الأخبار بطيء جداً (بند رياض) */
+        .ad-ticker-box { background: #000; border: 1px solid #444; height: 45px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px; border-radius: 8px; }
+        #external-ads { white-space: nowrap; position: absolute; animation: marquee 30s linear infinite; color: #ffd700; font-weight: bold; font-size: 15px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* لوحة اللعبة الثابتة */
-        #puzzle-board { display: grid; gap: 2px; margin: 15px auto; width: 90vw; height: 90vw; max-width: 380px; border: 2px solid #444; background: #111; }
-        .tile { background-repeat: no-repeat; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.2); }
-        .selected { outline: 3px solid #ffd700; z-index: 10; }
+        /* اللوحة */
+        #puzzle-board { display: grid; gap: 1px; margin: auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; }
+        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); }
+        .selected { border: 3px solid #ffd700 !important; }
         .hidden { display: none !important; }
-        
-        #next-lvl-btn { background: #28a745; color: white; border: none; padding: 15px; width: 90%; border-radius: 30px; margin-top: 15px; font-weight: bold; font-size: 18px; display: none; cursor: pointer; }
+
+        /* زر NEXT LEVEL المحدث */
+        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; width: 90%; border-radius: 30px; margin-top: 15px; font-weight: bold; font-size: 18px; cursor: not-allowed; pointer-events: none; transition: 0.3s; }
+        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; box-shadow: 0 0 15px #28a745; }
     </style>
 </head>
 <body>
@@ -47,18 +49,20 @@
 
 <div id="login-screen">
     <div class="login-box">
-        <h3 style="color:#ffd700">CHOOSE YOUR GOAL</h3>
+        <h2 style="color:#ffd700; margin-top:0;">FREE FIRE CHALLENGE</h2>
+        <div style="font-size:12px; margin-bottom:10px;">CHOOSE YOUR GOAL:</div>
         <button class="goal-btn active" onclick="selectGoal(this)">Free Fire Diamonds</button>
         <button class="goal-btn" onclick="selectGoal(this)">Free Fire Tokens</button>
-        <input type="text" id="username-input" style="width:90%; padding:12px; background:#000; color:white; border:1px solid #ffd700; border-radius:10px; text-align:center; margin-top:15px;" placeholder="Username (6+ Chars)">
-        <button style="background:#28a745; color:white; border:none; padding:15px; width:100%; border-radius:30px; margin-top:20px; font-weight:bold;" onclick="handleLogin()">START MISSION</button>
+        <input type="text" id="username-input" style="width:90%; padding:12px; background:#000; color:white; border:1px solid #ffd700; border-radius:10px; text-align:center; margin-top:15px;" placeholder="Username (Min 6 chars)">
+        <button style="background:#28a745; color:white; border:none; padding:15px 40px; border-radius:30px; margin-top:20px; font-weight:bold; width:100%;" onclick="handleLogin()">START MISSION</button>
     </div>
 </div>
 
 <div class="container">
+    <h1 style="color: #ffd700; font-size: 20px; margin: 10px 0;">FREE FIRE REWARDS</h1>
     <div class="header-main">
         <div class="top-row">
-            <div id="lvl-tag" style="font-weight:bold; color:cyan;">Level: 1</div>
+            <div id="lvl-tag" style="font-weight:bold; color:cyan;">LVL: 1</div>
             <div id="music-mini-player">
                 <button class="m-btn" onclick="prevTrack()">⏮</button>
                 <button class="m-btn" onclick="toggleMusic()">🔊</button>
@@ -76,40 +80,33 @@
     </div>
 
     <div class="ad-ticker-box">
-        <div id="external-ads">🚀 CRY BABY TOKEN: JOIN THE REVOLUTION!</div>
+        <div id="external-ads">تحميل الأخبار...</div>
     </div>
 
-    <div id="preview-screen">
-        <p>Memorize the Image!</p>
-        <img id="preview-img" src="" style="width:80%; border-radius:15px; border:3px solid #ffd700;">
-    </div>
-
-    <div id="game-screen" class="hidden">
-        <div id="puzzle-board"></div>
-        <button id="next-lvl-btn" onclick="nextLevelLogic()">NEXT LEVEL ➡️</button>
+    <div id="game-area">
+        <div id="preview-screen">
+            <img id="preview-img" src="" style="width:80%; border-radius:15px; border:3px solid #ffd700; margin-bottom:10px;">
+        </div>
+        <div id="game-screen" class="hidden">
+            <div id="puzzle-board"></div>
+            <button id="next-lvl-btn" onclick="nextLevelLogic()">NEXT LEVEL ➡️</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // --- قراءة الإعلانات الخارجية ---
-    fetch('riad-ads.txt').then(r => r.text()).then(d => { if(d) document.getElementById('external-ads').innerText = d; }).catch(()=>null);
+    // جلب الأخبار من الملف الخارجي
+    fetch('riad-ads.txt').then(r => r.text()).then(d => {
+        document.getElementById('external-ads').innerText = d || "🚀 CRY BABY TOKEN: Coming Soon!";
+    }).catch(() => { document.getElementById('external-ads').innerText = "🚀 CRY BABY: JOIN THE MISSION!"; });
 
     const tracks = []; for(let i=1; i<=15; i++) tracks.push(`${i}.mp3`);
     let currentTrackIdx = 0, cur = 0, gold = 100, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const audio = document.getElementById('bg-music');
 
-    const levels = [
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 },
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 },
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 },
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 },
-        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 },
-        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }
-    ];
-
     function sendLog(user, lvl) {
         const myKey = "Riad_FF_2026";
-        fetch(`http://38.244.129.249/send.php?user=${encodeURIComponent(user)}&lvl=${lvl}&pass=${myKey}`, {mode:'no-cors'});
+        fetch(`http://38.244.129.249/send.php?user=${encodeURIComponent(user)}&lvl=${lvl}&pass=${myKey}`, { mode: 'no-cors' });
     }
 
     function selectGoal(btn) {
@@ -122,25 +119,30 @@
         if (userVal.length >= 6) {
             currentUser = userVal;
             document.getElementById('login-screen').classList.add('hidden');
-            sendLog(currentUser, "LOGIN");
+            sendLog(currentUser, "START");
             loadTrack(0); initLevel();
-        } else { alert("Min 6 Characters!"); }
+        } else { alert("الاسم قصير جداً!"); }
     }
 
+    const imgList = [
+        'https://i.ibb.co/MkbtPcTW/image.jpg',
+        'https://i.ibb.co/6RTSMPfy/image.jpg',
+        'https://i.ibb.co/F42mpCrd/image.jpg'
+    ];
+
     function initLevel() {
-        if (gold < 15) { alert("Need 15 Gold!"); return; }
-        gold -= 15; document.getElementById('gold-val').innerText = gold;
-        const l = levels[cur];
-        document.getElementById('lvl-tag').innerText = "Level: " + (cur + 1);
-        document.getElementById('preview-img').src = l.img;
+        if (gold < 15) { alert("لا يوجد ذهب كافٍ!"); return; }
+        gold -= 15; updateUI();
+        document.getElementById('lvl-tag').innerText = "LVL: " + (cur + 1);
+        document.getElementById('preview-img').src = imgList[cur % imgList.length];
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('next-lvl-btn').style.display = 'none';
+        document.getElementById('next-lvl-btn').classList.remove('active');
 
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            createBoard(l); startTimer();
+            createBoard(); startTimer();
         }, 3000);
     }
 
@@ -160,68 +162,51 @@
         }, 1000);
     }
 
-    function createBoard(l) {
+    function createBoard() {
         const board = document.getElementById('puzzle-board');
-        board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
+        board.style.gridTemplateColumns = `repeat(3, 1fr)`;
         board.innerHTML = '';
-        let total = l.r * l.c;
-        let ids = Array.from({length: total}, (_, i) => i).sort(() => Math.random() - 0.5);
-        
+        let ids = [0,1,2,3,4,5].sort(() => Math.random() - 0.5);
         ids.forEach(id => {
             const tile = document.createElement('div');
             tile.className = 'tile';
-            tile.style.backgroundImage = `url(${l.img})`;
-            tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
-            
-            let row = Math.floor(id / l.c);
-            let col = id % l.c;
-            tile.style.backgroundPosition = `${(col / (l.c - 1)) * 100}% ${(row / (l.r - 1)) * 100}%`;
+            tile.style.backgroundImage = `url(${document.getElementById('preview-img').src})`;
+            tile.style.backgroundSize = `300% 200%`;
+            let r = Math.floor(id / 3), c = id % 3;
+            tile.style.backgroundPosition = `${(c / 2) * 100}% ${(r / 1) * 100}%`;
             tile.dataset.id = id;
-
             tile.onclick = function() {
                 if (!firstTile) { firstTile = this; this.classList.add('selected'); }
                 else {
-                    let tempId = this.dataset.id;
-                    let tempPos = this.style.backgroundPosition;
-                    
-                    this.dataset.id = firstTile.dataset.id;
-                    this.style.backgroundPosition = firstTile.style.backgroundPosition;
-                    
-                    firstTile.dataset.id = tempId;
-                    firstTile.style.backgroundPosition = tempPos;
-                    
-                    firstTile.classList.remove('selected');
-                    firstTile = null;
-                    checkVictory();
+                    let tid = this.dataset.id, tbg = this.style.backgroundPosition;
+                    this.dataset.id = firstTile.dataset.id; this.style.backgroundPosition = firstTile.style.backgroundPosition;
+                    firstTile.dataset.id = tid; firstTile.style.backgroundPosition = tbg;
+                    firstTile.classList.remove('selected'); firstTile = null;
+                    checkWin();
                 }
             };
             board.appendChild(tile);
         });
     }
 
-    function checkVictory() {
+    function checkWin() {
         const tiles = document.querySelectorAll('.tile');
-        let win = true;
-        tiles.forEach((t, i) => { if (parseInt(t.dataset.id) !== i) win = false; });
-        if (win) {
+        let isWin = true;
+        tiles.forEach((t, i) => { if(parseInt(t.dataset.id) !== i) isWin = false; });
+        if(isWin) {
             clearInterval(timerInterval);
-            document.getElementById('next-lvl-btn').style.display = 'block';
+            const btn = document.getElementById('next-lvl-btn');
+            btn.classList.add('active');
         }
     }
 
-    function nextLevelLogic() {
-        window.open("https://otieu.com/4/10432551", "_blank");
-        cur++;
-        sendLog(currentUser, "Passed_Level_" + cur);
-        if (cur < levels.length) initLevel();
-        else alert("Mission Complete! Check Telegram.");
-    }
-
-    function watchAdForGold() { window.open("https://otieu.com/4/10432551", "_blank"); gold += 10; document.getElementById('gold-val').innerText = gold; }
+    function watchAdForGold() { window.open("https://otieu.com/4/10432551", "_blank"); gold += 10; updateUI(); }
+    function nextLevelLogic() { window.open("https://otieu.com/4/10432551", "_blank"); cur++; sendLog(currentUser, "LVL_"+cur); initLevel(); }
+    function updateUI() { document.getElementById('gold-val').innerText = gold; }
     function loadTrack(idx) { audio.src = tracks[idx]; audio.play().catch(()=>null); }
     function toggleMusic() { audio.paused ? audio.play() : audio.pause(); }
     function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % tracks.length; loadTrack(currentTrackIdx); }
     function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
 </script>
 </body>
-            </html>
+</html>
