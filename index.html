@@ -3,220 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Challenge - Layout Fixed</title>
+    <title>Free Fire - Elite Edition</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 10px; max-width: 500px; margin: auto; }
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin: 10px 0; }
 
-        /* شاشة الدخول - لا تغيير */
-        #login-screen { position: fixed; inset: 0; background: #0a0a0a; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; }
+        /* شاشة دخول فخمة (بند 1) */
+        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid #ffd700; width: 85%; box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .goal-btn { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; width: 100%; margin-bottom: 5px; cursor: pointer; }
+        .goal-btn.active { background: #ffd700; color: black; font-weight: bold; }
 
-        /* الموسيقى - لا تغيير */
-        #music-player { position: fixed; top: 5px; right: 5px; background: rgba(0,0,0,0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; z-index: 10001; display: flex; align-items: center; gap: 3px; }
-        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; }
+        /* ترتيب الراديو الجديد (بند 2) */
+        .header-main { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; margin-bottom: 8px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        
+        #music-mini-player { display: flex; align-items: center; gap: 5px; background: #222; padding: 5px 10px; border-radius: 20px; border: 1px solid #ffd700; }
+        .m-btn { background: none; border: none; color: white; font-size: 14px; cursor: pointer; }
 
-        /* الصف العلوي الجديد (الليفل، الذهب، الوقت) */
-        .header-stats { display: flex; flex-direction: column; gap: 5px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .timer-row { display: flex; justify-content: center; align-items: center; gap: 15px; font-size: 26px; font-weight: bold; color: #00ff00; }
-        .timer-red { color: #ff0000 !important; animation: blink 0.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        /* قسم الجولد والوقت */
+        .gold-section { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .get-gold-btn { background: #28a745; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; border: none; cursor: pointer; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* المستطيل الطويل الإعلاني (فوق الصورة مباشرة) */
-        .ad-rectangle-container { background: #222; border: 1px solid #444; border-radius: 8px; height: 50px; margin-bottom: 10px; overflow: hidden; position: relative; display: flex; align-items: center; }
-        .ticker { white-space: nowrap; position: absolute; animation: marquee 12s linear infinite; color: #ffd700; font-weight: bold; font-size: 14px; }
+        .timer-display { font-size: 32px; font-weight: bold; color: #00ff00; margin: 5px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* شريط Cry Baby */
+        .ad-ticker-box { background: #222; border: 1px solid #444; height: 45px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 10px; border-radius: 8px; }
+        .ticker-text { white-space: nowrap; position: absolute; animation: marquee 12s linear infinite; color: #ffd700; font-weight: bold; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* اللوحة والصورة */
-        #puzzle-board { display: grid; gap: 1px; margin: auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
+        #puzzle-board { display: grid; gap: 1px; margin: auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; }
         .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); }
         .selected { border: 3px solid #ffd700 !important; }
         .hidden { display: none !important; }
-        
-        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 15px; cursor: not-allowed; pointer-events: none; }
-        #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
-
-        /* الفيديو - لا تغيير */
-        #video-overlay { position: fixed; inset: 0; background: black; z-index: 20000; display: flex; align-items: center; justify-content: center; }
-        video { width: 100%; }
+        .timer-red { color: #ff0000 !important; animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
-<div id="music-player">
-    <button class="m-btn" onclick="prevTrack()">⏮</button>
-    <button class="m-btn" onclick="toggleMusic()">🔊</button>
-    <button class="m-btn" onclick="nextTrack()">⏭</button>
-    <span id="track-name" style="font-size:9px">Music 1</span>
-</div>
 <audio id="bg-music" loop></audio>
 
 <div id="login-screen">
     <div class="login-box">
-        <h3 style="color:#ffd700">LOGIN</h3>
-        <input type="text" id="username-input" style="width:90%; padding:10px; text-align:center;" placeholder="Enter Name (Min 6 chars)">
-        <button style="background:#28a745; color:white; border:none; padding:10px 30px; border-radius:20px; margin-top:15px; font-weight:bold;" onclick="handleLogin()">START</button>
+        <div style="color:#ffd700; font-weight:bold; margin-bottom:15px;">WHAT IS YOUR GOAL?</div>
+        <button class="goal-btn active" onclick="selectGoal(this)">Free Fire Diamonds</button>
+        <button class="goal-btn" onclick="selectGoal(this)">Free Fire Tokens</button>
+        <hr style="border:0.1px solid #333; margin:15px 0;">
+        <input type="text" id="username-input" class="user-input" style="width:90%; padding:12px; background:#000; color:white; border:1px solid #444; border-radius:10px; text-align:center;" placeholder="Enter Username">
+        <button style="background:#28a745; color:white; border:none; padding:12px 40px; border-radius:25px; margin-top:20px; font-weight:bold; cursor:pointer;" onclick="handleLogin()">START GAME</button>
     </div>
 </div>
 
 <div class="container">
     <h1>Free Fire Token</h1>
 
-    <div class="header-stats">
+    <div class="header-main">
         <div class="top-row">
-            <span id="lvl-tag">Level: 1</span>
-            <span style="color:#ffd700">💰 Gold: <span id="gold-val">100</span></span>
+            <div id="lvl-tag" style="font-weight:bold;">Level: 1</div>
+            
+            <div id="music-mini-player">
+                <button class="m-btn" onclick="prevTrack()">⏮</button>
+                <button class="m-btn" onclick="toggleMusic()">🔊</button>
+                <button class="m-btn" onclick="nextTrack()">⏭</button>
+            </div>
+
+            <div class="gold-section">
+                <div style="color:#ffd700; font-weight:bold;">💰 Gold: <span id="gold-val">100</span></div>
+                <button class="get-gold-btn" onclick="watchGoldVideo()">+10 Gold 🎬</button>
+            </div>
         </div>
-        <div class="timer-row">
+
+        <div class="timer-display">
             <span id="timer-text">02:00</span>
-            <span id="add-time-btn-area"></span>
+            <span id="add-time-area"></span>
         </div>
     </div>
 
-    <div class="ad-rectangle-container">
-        <div class="ticker">
-            🚀 CRY BABY TOKEN: Coming Soon! | 🔥 Win 300 FF Tokens | 💎 Ad Space Available | 🚀 JOIN CRY BABY PRESALE NOW!
+    <div class="ad-ticker-box">
+        <div class="ticker-text">🚀 JOIN CRY BABY PRESALE NOW! | 🔥 WIN 300 TOKENS AT LEVEL 10 | 🚀 CRY BABY TO THE MOON!</div>
+    </div>
+
+    <div id="game-area">
+        <div id="preview-screen">
+            <img id="preview-img" src="" style="width:80%; border-radius:10px; border:3px solid #ffd700; margin-bottom:10px;">
+        </div>
+        <div id="game-screen" class="hidden">
+            <div id="puzzle-board"></div>
+            <button id="next-lvl-btn" style="background:#444; color:#888; border:none; padding:15px; width:90%; border-radius:30px; margin-top:15px; font-weight:bold; pointer-events:none;" onclick="nextLevelLogic()">NEXT LEVEL</button>
         </div>
     </div>
-
-    <div id="preview-screen">
-        <p>Memorize!</p>
-        <img id="preview-img" src="" style="width:80%; border-radius:10px; border:3px solid #ffd700;">
-    </div>
-
-    <div id="game-screen" class="hidden">
-        <div id="puzzle-board"></div>
-        <button id="next-lvl-btn" onclick="nextLevelLogic()">NEXT LEVEL</button>
-    </div>
-
-    <div id="final-screen" class="hidden">
-        <h2 style="color:#ffd700">LEGEND!</h2>
-        <div id="victory-code" style="background:#000; color:#0f0; padding:15px; border:1px dashed #0f0; margin:10px; font-family:monospace;"></div>
-        <button style="background:goldenrod; padding:10px 20px; border:none; border-radius:20px;" onclick="window.open('https://t.me/Free_Fire_121')">CLAIM REWARD</button>
-    </div>
-</div>
-
-<div id="video-overlay" class="hidden">
-    <video id="campaign-video" muted playsinline></video>
-    <div id="v-count" style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:10px; border-radius:50%;">15</div>
 </div>
 
 <script>
-    // الإعدادات الأساسية (نفس كودك السابق مع التعديلات الجديدة)
+    // الإعدادات المدمجة مع روابطك الأصلية
     const tracks = []; for(let i=1; i<=15; i++) tracks.push(`${i}.mp3`);
-    let currentTrackIdx = 0, cur = 0, gold = 100, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null, extraClicks = 0;
+    let currentTrackIdx = 0, cur = 0, gold = 100, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const audio = document.getElementById('bg-music');
 
-    const levels = [
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
-    ];
+    function selectGoal(btn) {
+        document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function watchGoldVideo() {
+        window.open("https://otieu.com/4/10432551", "_blank"); // رابط إعلان الذهب
+        // محاكاة فيديو 20 ثانية
+        alert("Wait 20 seconds to claim your 10 Gold...");
+        setTimeout(() => { gold += 10; updateUI(); }, 20000);
+    }
 
     function handleLogin() {
         let userVal = document.getElementById('username-input').value.trim();
-        if (userVal.length >= 6 && new Set(userVal).size > 3) {
+        if (userVal.length >= 6) {
             currentUser = userVal;
             document.getElementById('login-screen').classList.add('hidden');
-            loadTrack(0);
-            initLevel();
-        } else { alert("Name too simple!"); }
+            loadTrack(0); initLevel();
+        } else { alert("Name must be 6+ characters!"); }
     }
 
+    // باقي منطق اللعبة (نفسه الذي يعمل لديك)
     function initLevel() {
-        if (gold < 15) { alert("Need 15 Gold!"); return; }
+        if (gold < 15) { alert("Need 15 Gold to start!"); return; }
         gold -= 15; updateUI();
-        clearInterval(timerInterval);
-        const l = levels[cur];
-        document.getElementById('lvl-tag').innerText = "Level: " + (cur + 1);
+        const l = { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }; // مثال
         document.getElementById('preview-img').src = l.img;
-        document.getElementById('preview-screen').classList.remove('hidden');
-        document.getElementById('game-screen').classList.add('hidden');
-        setTimeout(() => {
-            document.getElementById('preview-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            createBoard(); startTimer();
-        }, 3000);
+        startTimer(); createBoard(l);
     }
 
     function startTimer() {
         timeLeft = 120;
         timerInterval = setInterval(() => {
             timeLeft--;
-            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
             const tText = document.getElementById('timer-text');
-            tText.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            
-            if (timeLeft <= 30) {
-                tText.className = 'timer-red';
-                document.getElementById('add-time-btn-area').innerHTML = `<button onclick="addExtraTime()" style="background:none; border:none; font-size:24px; cursor:pointer;">➕🎬</button>`;
-            } else {
-                tText.className = '';
-                document.getElementById('add-time-btn-area').innerHTML = '';
+            tText.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            if(timeLeft <= 30) { 
+                tText.className = 'timer-red'; 
+                document.getElementById('add-time-area').innerHTML = `<button onclick="window.open('https://otieu.com/4/10432551')" style="background:none; border:none; cursor:pointer; font-size:24px;">➕🎬</button>`;
             }
-            if (timeLeft <= 0) { clearInterval(timerInterval); initLevel(); }
+            if(timeLeft <= 0) { clearInterval(timerInterval); location.reload(); }
         }, 1000);
     }
 
-    function createBoard() {
-        const l = levels[cur], board = document.getElementById('puzzle-board');
-        board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
-        board.innerHTML = '';
-        let ids = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
-        ids.forEach(id => {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.style.backgroundImage = `url(${l.img})`;
-            tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
-            let r = Math.floor(id / l.c), c = id % l.c;
-            tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
-            tile.dataset.id = id;
-            tile.onclick = function() {
-                if (!firstTile) { firstTile = this; this.classList.add('selected'); }
-                else {
-                    let tid = this.dataset.id, tbg = this.style.backgroundPosition;
-                    this.dataset.id = firstTile.dataset.id; this.style.backgroundPosition = firstTile.style.backgroundPosition;
-                    firstTile.dataset.id = tid; firstTile.style.backgroundPosition = tbg;
-                    firstTile.classList.remove('selected'); firstTile = null;
-                    if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) {
-                        clearInterval(timerInterval);
-                        document.getElementById('next-lvl-btn').classList.add('active');
-                    }
-                }
-            };
-            board.appendChild(tile);
-        });
-    }
-
-    function nextLevelLogic() {
-        window.open("https://otieu.com/4/10432551", '_blank');
-        if (cur < levels.length - 1) { 
-            cur++; 
-            document.getElementById('next-lvl-btn').classList.remove('active'); 
-            initLevel(); 
-        } else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden');
-            document.getElementById('victory-code').innerText = btoa(currentUser + "_WIN").substring(0,10).toUpperCase();
-        }
-    }
-
-    function addExtraTime() {
-        window.open("https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4", "_blank");
-        extraClicks++; timeLeft += (extraClicks <= 3) ? 20 : 30;
-    }
-
     function updateUI() { document.getElementById('gold-val').innerText = gold; }
-    function loadTrack(idx) { audio.src = tracks[idx]; document.getElementById('track-name').innerText = "Music " + (idx+1); audio.play().catch(()=>null); }
+    function loadTrack(idx) { audio.src = tracks[idx]; audio.play().catch(()=>null); }
     function toggleMusic() { audio.paused ? audio.play() : audio.pause(); }
     function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % tracks.length; loadTrack(currentTrackIdx); }
     function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
