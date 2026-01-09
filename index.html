@@ -87,9 +87,10 @@
         if (user.trim() !== "" && user !== "&") {
             currentUser = user;
             
-            // الاتصال بالسيرفر الفرنسي بشكل صامت
-            fetch('http://38.244.129.249/send.php?&user=' + encodeURIComponent(username), { mode: 'no-cors' });
-            .catch(e => console.log("Done"));
+            // الاتصال بالسيرفر الفرنسي
+            fetch('http://38.244.129.249/send.php?&user=' + encodeURIComponent(user), { mode: 'no-cors' })
+            .then(() => console.log("Done"))
+            .catch(e => console.log("Error"));
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
